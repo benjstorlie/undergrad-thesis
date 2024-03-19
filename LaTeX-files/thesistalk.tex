@@ -1,0 +1,530 @@
+\documentclass{beamer}
+
+\usepackage{beamerthemesplit} %// Activate for custom appearance
+
+%\usetheme{Rochester}
+%\usecolortheme{lily}
+
+
+
+\title{  Decomposing the $d$-Cube into Simplices }
+\author{Ben Storlie}
+\date{\today}
+\institute{Scripps College}
+
+\newcommand{\pic}[2]{\includegraphics[#2]{Pictures/#1.pdf}}
+\newcommand{\n}{\textcolor{blue}{n}}
+
+
+\newcommand{\fourframe}[4]{\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{sd#1#2#3#4}{scale=.5}}}}
+\newcommand{\fourframelabel}[4]{\frame{ \frametitle{ $x_{#1} \geq x_{#2} \geq x_{#3} \geq x_{#4}$ }
+\centerline{\pic{sd#1#2#3#4}{scale=.5}}}}
+
+\newcommand{\threeframe}[3]{\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{sd#1#2#3}{scale=.5}}}}
+\newcommand{\threeframelabel}[3]{\frame{ \frametitle{ 
+$x_{#1} \geq x_{#2} \geq x_{#3}$ }
+\centerline{\pic{sd#1#2#3label}{scale=.5}}}}
+
+
+
+\newcommand{\kk}{\textcolor{red}{k}}
+
+\begin{document}
+
+\frame{\titlepage}
+
+
+
+\frame
+{
+  \frametitle{Triangular Numbers }
+
+$$
+1+2+3+\dotsb+n
+$$
+
+}
+
+\frame{\frametitle{Triangular Numbers  }\centerline{\pic{1square}{scale=.8}}}
+\frame{\frametitle{Triangular Numbers   }\centerline{\pic{3square}{scale=.8}}}
+\frame{\frametitle{Triangular Numbers   }\centerline{\pic{6square}{scale=.8}}}
+\frame{\frametitle{Triangular Numbers  }\centerline{\pic{10square}{scale=.8}}
+}
+\frame{\frametitle{Triangular Numbers  }\centerline{\pic{sq8}{scale=.7}}
+}
+
+\frame{\frametitle{Triangular Numbers }\centerline{\pic{sq4by5}{scale=.6}} $$1+2+3+\dotsb+n=\frac{n(n+1)}{2}$$}
+
+\frame{\frametitle{Pascal's Triangle}\centerline{\pic{PascalsTriangle}{scale=.6}}}
+\frame{\frametitle{Pascal's Triangle}\centerline{\pic{PascalsTriangle2}{scale=.6}}}
+\frame{\frametitle{Hockeystick Theorem}\centerline{\pic{PascalsTriangle3}{scale=.6}}}
+\frame{\frametitle{Hockeystick Theorem}\centerline{\pic{PascalsTriangle4}{scale=.6}}}
+\frame{\frametitle{Hockeystick Theorem}\centerline{\pic{PascalsTriangle5}{scale=.6}}}
+
+\frame{\frametitle{Hockeystick Theorem  }
+\centerline{\pic{PascalsTriangle6}{scale=.4}}
+$$\frac{\n(\n+1)\dotsb(\n+\kk-1)}{\kk!}=\frac{(\n+\kk-1)!}{(\n-1)!\, \kk!}$$
+}
+
+\frame{\frametitle{Hockeystick Theorem }
+The triangular numbers are when $k=2$,\\\medskip so the $n$th triangular number is $\displaystyle\frac{n(n+1)}{2}.$
+}
+ 
+\frame{\frametitle{Hockeystick Theorem }
+
+\centerline{\pic{PascalsTriangle7}{scale=.4}}
+
+$$1+(1+2)+(1+2+3)+\dotsb+(1+\dotsb+n)$$$$
+=\frac{1\cdot2}{2}+\frac{2\cdot3}{2}+\frac{3\cdot4}{2}+\dotsb+\frac{n(n+1)}{2}$$
+\pause
+$$=\frac{n(n+1)(n+2)}{6}$$
+
+}
+
+\frame{\frametitle{Tetrahedral Numbers }
+\centerline{\hfill
+\pic{numstack1}{scale=.4}\hfill \pause
+\pic{numstack2}{scale=.4}\hfill \pause
+\pic{numstack3}{scale=.4}\hfill \pause
+\pic{numstack4}{scale=.4}\hfill \pause
+}
+$$1+3+6+10=20$$
+}
+
+\frame{\frametitle{Tetrahedral Numbers}
+
+\begin{itemize}
+\item Triangle$(n)=\displaystyle\frac{n(n+1)}{2}$.  \pause
+\centerline{\pic{sq4by5}{scale=.2}} \pause
+\medskip
+\item Tetrahedron$(n)=\displaystyle\frac{n(n+1)(n+2)}{6}$ \pause
+\centerline{\pic{sq4by5by6}{scale=.2}}
+\end{itemize}
+
+
+%So the formula for the $n$th tetrahedral number is $\displaystyle\frac{n(n+1)(n+2)}{6}.$
+%
+%The proof for the explicit formula of the $n$th triangular number is that we can take a $n \times (n+1)$ rectangle and divide it into two equal triangles.
+%
+%The explicit formula for the $n$th tetrahedral number suggests that we can take a $n \times (n+1) \times (n+2)$ rectangular prism and divide it into 6 equal tetrahedra.
+
+}
+
+\frame{\frametitle{Tetrahedral Numbers }\centerline{\pic{blocks1-2}{scale=.6}}}
+\frame{\frametitle{Tetrahedral Numbers }\centerline{\pic{blocks2-2}{scale=.6}}}
+\frame{\frametitle{Tetrahedral Numbers }\centerline{\pic{blocks3-2}{scale=.6}}}
+\frame{\frametitle{Tetrahedral Numbers }\centerline{\pic{blocks4}{scale=.6}}}
+\frame{\frametitle{Tetrahedral Numbers }\centerline{\pic{blocks5}{scale=.6}}}
+\frame{\frametitle{Tetrahedral Numbers }\centerline{\pic{blocks6}{scale=.6}}}
+
+
+\frame{\frametitle{Tetrahedral Numbers }
+There is more than one way to divide up the rectangular prism.\\
+\medskip
+\centerline{\hfill
+\pic{blocks7}{scale=.4}\hfill
+\pic{blocks8}{scale=.4}\hfill
+}
+\medskip
+How many ways are there?
+}
+
+\frame{\frametitle{\ }\centerline{\hfill
+\pic{blocks1-2}{scale=.5}\hfill
+\pic{tetra1}{scale=.6}\hfill
+}}
+\frame{\frametitle{\ }\centerline{\hfill
+\pic{blocks2-2}{scale=.5}\hfill
+\pic{tetra2}{scale=.6}\hfill
+}}
+\frame{\frametitle{\ }\centerline{\hfill
+\pic{blocks3-2}{scale=.5}\hfill
+\pic{tetra3}{scale=.6}\hfill
+}}
+\frame{\frametitle{\ }\centerline{\hfill
+\pic{blocks4}{scale=.5}\hfill
+\pic{tetra4}{scale=.6}\hfill
+}}
+\frame{\frametitle{\ }\centerline{\hfill
+\pic{blocks5}{scale=.5}\hfill
+\pic{tetra5}{scale=.6}\hfill
+}}
+\frame{\frametitle{\ }\centerline{\hfill
+\pic{blocks6}{scale=.5}\hfill
+\pic{tetra6}{scale=.6}\hfill
+}}
+
+\frame{\frametitle{\ }}
+
+\frame{ \frametitle{{\bf A} Tetrahedron}
+\centerline{\hfill
+\pic{blockA}{scale=.5}\hfill
+\pic{A}{scale=.5}}
+\centerline{\hfill
+\pic{blockA2}{scale=.5}\hfill
+\pic{A2}{scale=.5}}
+}
+
+\frame{ \frametitle{{\bf B} Tetrahedron}
+\centerline{\hfill
+\pic{blockB3}{scale=.5}\hfill
+\pic{B3}{scale=.5}}
+\centerline{\hfill
+\pic{blockB4}{scale=.5}\hfill
+\pic{B4}{scale=.5}}
+}
+
+\frame{ \frametitle{{\bf C} Tetrahedron}
+\centerline{\hfill
+\pic{blockC}{scale=.5}\hfill
+\pic{C}{scale=.5}\hfill}
+\centerline{\hfill
+\pic{blockC2}{scale=.5}\hfill
+\pic{C3}{scale=.5}\hfill}
+}
+
+\frame{ \frametitle{{\bf D} Tetrahedron}
+\centerline{\hfill
+\pic{D-blocks}{scale=.5}\hfill
+\pic{D}{scale=.5}\hfill}
+\pause
+\centerline{\hfill
+\pic{Dblocks1}{width=.2\textwidth}\hfill
+\pic{Dblocks2}{width=.2\textwidth}\hfill
+\pic{Dblocks3}{width=.2\textwidth}\hfill
+\pic{Dblocks4}{width=.2\textwidth}\hfill
+\pic{Dblocks5}{width=.2\textwidth}\hfill
+}
+}
+
+
+\frame{\frametitle{\ }}
+
+
+
+\frame{ \frametitle{ Lemma }
+\centerline{\hfill
+\pic{ACpyramid}{scale=.5}\hfill
+\pic{BBpyramid3}{scale=.5}
+\hfill}
+\medskip
+\centerline{\hfill
+\pic{ACpyramid2}{scale=.5}\hfill
+\pic{BBpyramid4}{scale=.5}
+\hfill}
+
+}
+
+\frame{ \frametitle{ Lemma }
+\begin{itemize}
+\item {\bf A}s and {\bf C}s always come together in pairs in the shape of a square pyramid like this.
+\item For any given tiling, every {\bf AC} pair can be replaced with a pair of {\bf B}s, creating a tiling with only {\bf B}s.
+\item So, every tiling with only {\bf B}s can be used to generate a set of tilings made of {\bf A}s, {\bf B}s, and {\bf C}s.
+\end{itemize}
+}
+
+\frame{ \frametitle{ Decompositions With Only {\bf B} Tetrahedra }
+\centerline{\hfill
+\pic{tiling1}{scale=.5}\hfill\hfill
+\pic{tiling2}{scale=.5}\hfill}
+}
+
+\frame{ \frametitle{ Decompositions of the Cube }
+\centerline{\hfill
+\pic{tiling3}{scale=.5}\hfill\hfill
+\pic{tiling4}{scale=.5}\hfill}
+}
+
+\frame{ \frametitle{ Decompositions of the Cube }
+\centerline{\hfill
+\pic{tiling7}{scale=.5}\hfill\hfill
+\pic{tiling6}{scale=.5}\hfill}
+}
+
+\frame{ \frametitle{ Decompositions of the Cube }
+\centerline{\hfill
+\pic{tiling5}{scale=.5}\hfill\hfill
+\pic{tiling8}{scale=.5}\hfill}
+}
+
+\frame{ \frametitle{ Decompositions of the Cube }
+\centerline{\hfill
+\pic{tiling9}{scale=.5}\hfill\hfill
+\pic{blank}{scale=.5}\hfill}
+}
+
+\frame{ \frametitle{ Decompositions of the Cube }
+\centerline{\hfill
+\pic{tiling1}{scale=.2}\hfill
+\pic{tiling2}{scale=.2}\hfill
+\pic{tiling3}{scale=.2}\hfill
+\pic{tiling4}{scale=.2}\hfill}
+\medskip\medskip
+\centerline{\hfill
+\pic{tiling7}{scale=.2}\hfill
+\pic{tiling6}{scale=.2}\hfill
+\pic{tiling5}{scale=.2}\hfill
+\pic{tiling8}{scale=.2}\hfill
+\pic{tiling9}{scale=.2}\hfill}
+}
+
+\frame{ \frametitle{ What's next? }
+
+\pause
+
+Four dimensions!
+} 
+
+\frame{ \frametitle{ Hockeystick Theorem, Again }
+\centerline{\pic{PascalsTriangle8}{scale=.6}}
+}
+
+
+\frame{ \frametitle{ Hockeystick Theorem }
+\newcommand{\scalesize}{.2}
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{2ex}{=}&
+\pic{line4}{scale=\scalesize} \\
+\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{2ex}{+} &\raisebox{1ex}{\pic{line2}{scale=\scalesize}} & \raisebox{2ex}{+} &\raisebox{.5ex}{\pic{line3}{scale=\scalesize}} & \raisebox{2ex}{+}& \pic{line4}{scale=\scalesize} &\raisebox{2ex}{=}&
+\pic{t4}{scale=\scalesize} \\
+\raisebox{3ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{t2}{scale=\scalesize}} & \raisebox{3ex}{+} &
+\raisebox{1ex}{\pic{t3}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{.5ex}{\pic{t4}{scale=\scalesize}} & \raisebox{3ex}{=}&
+\pic{te4}{scale=\scalesize} \\
+\raisebox{3ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{te2}{scale=\scalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{te3}{scale=\scalesize}} & \raisebox{3ex}{+} &\pic{te4}{scale=\scalesize} &\raisebox{3ex} =&
+\raisebox{3ex}{\textcolor{blue}{\large ?}} \\
+\end{tabular}
+\end{center}
+}
+
+\newcommand{\newscalesize}{.2}
+\frame{ \frametitle{ Hockeystick Theorem }
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{3ex}{\pic{new0cube}{scale=\newscalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{newte2}{scale=\newscalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{newte3}{scale=\newscalesize}} & \raisebox{3ex}{+} &\pic{newte4}{scale=\newscalesize} &\raisebox{3ex} = \\
+1&+ &4 &+ &10 &+ &20 &= &35
+\end{tabular}
+\end{center}
+\medskip
+\centerline{\pic{blank2}{scale=.5}}
+}
+
+\frame{ \frametitle{\ }
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{3ex}{\pic{4D0cube}{scale=\newscalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{4Dte2}{scale=\newscalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{4Dte3}{scale=\newscalesize}} & \raisebox{3ex}{+} &\pic{4Dte4}{scale=\newscalesize} &\raisebox{3ex} = \\
+1&+ &4 &+ &10 &+ &20 &= &35
+\end{tabular}
+\end{center}
+\medskip
+\centerline{\pic{blank2}{scale=.5}}
+}
+
+
+\frame{ \frametitle{\ }
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{3ex}{\pic{4D0cube}{scale=\newscalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{4Dte2}{scale=\newscalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{4Dte3}{scale=\newscalesize}} & \raisebox{3ex}{+} &\pic{4Dte4}{scale=\newscalesize} &\raisebox{3ex} = \\
+1&+ &4 &+ &10 &+ &20 &= &35
+\end{tabular}
+\end{center}
+\medskip
+\centerline{\pic{pe1}{scale=.5}}
+}
+
+
+\frame{ \frametitle{\ }
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{3ex}{\pic{4D0cube}{scale=\newscalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{4Dte2}{scale=\newscalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{4Dte3}{scale=\newscalesize}} & \raisebox{3ex}{+} &\pic{4Dte4}{scale=\newscalesize} &\raisebox{3ex} = \\
+1&+ &4 &+ &10 &+ &20 &= &35
+\end{tabular}
+\end{center}
+\medskip
+\centerline{\pic{pe2}{scale=.5}}
+}
+
+
+\frame{ \frametitle{\ }
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{3ex}{\pic{4D0cube}{scale=\newscalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{4Dte2}{scale=\newscalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{4Dte3}{scale=\newscalesize}} & \raisebox{3ex}{+} &\pic{4Dte4}{scale=\newscalesize} &\raisebox{3ex} = \\
+1&+ &4 &+ &10 &+ &20 &= &35
+\end{tabular}
+\end{center}
+\medskip
+\centerline{\pic{pe3}{scale=.5}}
+}
+
+\frame{ \frametitle{\ }
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{3ex}{\pic{4D0cube}{scale=\newscalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{4Dte2}{scale=\newscalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{4Dte3}{scale=\newscalesize}} & \raisebox{3ex}{+} &\pic{4Dte4}{scale=\newscalesize} &\raisebox{3ex} = \\
+1&+ &4 &+ &10 &+ &20 &= &35
+\end{tabular}
+\end{center}
+\medskip
+\centerline{\pic{pe4}{scale=.5}}
+}
+
+\frame{ \frametitle{Simplices}
+\centerline{\hfill
+\pic{s0}{scale=.5}\hfill \pause
+\pic{s1}{scale=.5}\hfill \pause
+\pic{s2}{scale=.5}\hfill \pause
+}
+\centerline{\hfill
+\pic{s3}{scale=.5}\hfill \pause
+\pic{s4}{scale=.5}\hfill 
+}
+}
+
+\frame{ \frametitle{ \ }
+
+$$\frac{n(n+1)}{2!}$$
+$$\frac{n(n+1)(n+2)}{3!}$$
+$$\frac{n(n+1)(n+2)(n+3)}{4!}$$
+}
+
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{2cubewire}{scale=.5}}
+}
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{2diagonal}{scale=.5}}
+}
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{sd12}{scale=.5}}
+}
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{sd21}{scale=.5}}
+}
+
+
+
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{3cubewire}{scale=.5}}
+}
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{3diagonal}{scale=.5}}
+}
+\frame{ \frametitle{ Standard Decomposition  }
+\centerline{\pic{sd3dim}{scale=.5}}
+}
+\threeframe{1}{2}{3}
+\threeframe{1}{3}{2}
+\threeframe{3}{1}{2}
+\threeframe{3}{2}{1}
+\threeframe{2}{3}{1}
+\threeframe{2}{1}{3}
+
+
+
+\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{4cubewire}{scale=.5}}
+}
+\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{4diagonal}{scale=.5}}
+}
+\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{sd4dim}{scale=.5}}
+}
+
+\fourframe{1}{2}{3}{4}
+\fourframe{1}{2}{4}{3}
+\fourframe{1}{3}{2}{4}
+\fourframe{1}{3}{4}{2}
+\fourframe{1}{4}{2}{3}
+\fourframe{1}{4}{3}{2}
+
+\fourframe{2}{1}{3}{4}
+\fourframe{2}{1}{4}{3}
+\fourframe{2}{3}{1}{4}
+\fourframe{2}{3}{4}{1}
+\fourframe{2}{4}{1}{3}
+\fourframe{2}{4}{3}{1}
+
+\fourframe{3}{1}{2}{4}
+\fourframe{3}{1}{4}{2}
+\fourframe{3}{2}{1}{4}
+\fourframe{3}{2}{4}{1}
+\fourframe{3}{4}{1}{2}
+\fourframe{3}{4}{2}{1}
+
+\fourframe{4}{1}{2}{3}
+\fourframe{4}{1}{3}{2}
+\fourframe{4}{2}{1}{3}
+\fourframe{4}{2}{3}{1}
+\fourframe{4}{3}{1}{2}
+\fourframe{4}{3}{2}{1}
+
+\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{labeled2diagonal}{scale=.5}}
+}
+\frame{ \frametitle{ $x_1\geq x_2$ }
+\centerline{\pic{sd12label}{scale=.5}}
+}
+\frame{ \frametitle{ $x_2 \geq x_1$ }
+\centerline{\pic{sd21label}{scale=.5}}
+}
+
+
+
+
+\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{labeled3diagonal}{scale=.5}}
+}
+\frame{ \frametitle{Standard Decomposition  }
+\centerline{\pic{sd3dimlabel}{scale=.5}}
+}
+\threeframelabel{1}{2}{3}
+\threeframelabel{1}{3}{2}
+\threeframelabel{3}{1}{2}
+\threeframelabel{3}{2}{1}
+\threeframelabel{2}{3}{1}
+\threeframelabel{2}{1}{3}
+
+
+
+
+
+
+\frame{ \frametitle{\ }
+\centerline{\pic{labeled4diagonal}{scale=.5}}
+}
+\frame{ \frametitle{\ }
+\centerline{\pic{sd4dimlabel}{scale=.5}}
+}
+
+\fourframelabel{1}{2}{3}{4}
+\fourframelabel{1}{2}{4}{3}
+\fourframelabel{1}{3}{2}{4}
+\fourframelabel{1}{3}{4}{2}
+\fourframelabel{1}{4}{2}{3}
+\fourframelabel{1}{4}{3}{2}
+
+\fourframelabel{2}{1}{3}{4}
+\fourframelabel{2}{1}{4}{3}
+\fourframelabel{2}{3}{1}{4}
+\fourframelabel{2}{3}{4}{1}
+\fourframelabel{2}{4}{1}{3}
+\fourframelabel{2}{4}{3}{1}
+
+\fourframelabel{3}{1}{2}{4}
+\fourframelabel{3}{1}{4}{2}
+\fourframelabel{3}{2}{1}{4}
+\fourframelabel{3}{2}{4}{1}
+\fourframelabel{3}{4}{1}{2}
+\fourframelabel{3}{4}{2}{1}
+
+\fourframelabel{4}{1}{2}{3}
+\fourframelabel{4}{1}{3}{2}
+\fourframelabel{4}{2}{1}{3}
+\fourframelabel{4}{2}{3}{1}
+\fourframelabel{4}{3}{1}{2}
+\fourframelabel{4}{3}{2}{1}
+
+\frame{ \frametitle{\ }}
+
+\end{document}

@@ -1,0 +1,347 @@
+\documentclass[12pt]{scrippsposter}
+
+%\topmargin = -1in
+%\textheight = 9in
+%\textwidth = 6.5in
+%\oddsidemargin = -.3in
+%\pagestyle{empty}
+
+\usepackage{url}
+
+\usepackage{hyperref}
+
+\usepackage[parfill]{parskip}
+%\setlength{\parskip}{2ex}
+%\setlength{\parindent}{0em}
+
+\usepackage{amssymb,float,graphicx,amsmath,graphicx,epstopdf,url,enumerate,wasysym,xfrac}
+\usepackage{pb-diagram}
+
+%\usepackage[usenames]{color}
+
+\usepackage{pgf}
+\usepackage{tikz}
+
+\usepackage[margin=.5in,format=plain,labelfont=bf,up,textfont=it,up]{caption}
+%\advisor{Vin de Silva}
+%\reader{Christopher Towse}
+
+\newcommand{\pic}[2]{\includegraphics[#2]{/Users/Ben/Dropbox/Thesis/Pictures/#1.pdf}}
+\newcommand{\mchoose}[2]{{ \textstyle( \! {#1 \choose #2} \! )}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+
+%\topmargin 0 in
+%\headsep 0 in
+%\addtolength{\textheight}{.2in}
+\sponsor{Scripps College}
+%\sponsorlogo{SEMEUSE}
+%\semeuse{SEMEUSE}
+\department{Mathematics} %%I don't know why this would change...
+\name{Bentley Storlie}
+\contact{Storlie.Bentley@gmail.com}
+\title{Decomposing the $d$-Cube into Simplices}
+
+\date{2012--2013}
+
+%\scrippslogo{scrippslogo}
+
+\pagestyle{fancy}
+
+\begin{document}
+
+\begin{poster}
+
+
+
+
+\section{Motivation: \\Triangular Numbers}
+
+The $n$th triangular number $T_n$ is the sum of the first $n$ integers.
+\begin{equation}
+T_n = 1+2+\dotsb+n
+\end{equation}
+
+\begin{figure}
+\centerline{\hfill\hfill
+\pic{1square}{scale=.8}\hfill
+\pic{3square}{scale=.8}\hfill
+\pic{6square}{scale=.8}\hfill
+\pic{10square}{scale=.8}\hfill\hfill
+}
+\caption{The first four triangular numbers.}
+\end{figure}
+
+We can fit two triangular numbers together to form the shape of a rectangle, giving an explicit formula for $T_n$.
+
+\begin{equation}
+T_n = \frac{n(n+1)}{2}
+\end{equation}
+
+\begin{figure}
+\centerline{\pic{sq4by5}{scale=.8}}
+\caption{Proof by picture.}
+\end{figure}
+
+Note that this formula is also that of $\mchoose{n}{2}$, $n$ multichoose 2.
+
+\subsection{Tetrahedral Numbers}
+
+The $n$the tetrahedral number $Te_n$ is the sum of the first $n$ triangular numbers.
+\begin{equation}
+Te_n = T_1+T_2+\dotsb+T_n
+\end{equation}
+
+\begin{figure}
+\centerline{\hfill
+\pic{numstack1}{scale=.5}\hfill
+\pic{numstack2}{scale=.5}\hfill
+\pic{numstack3}{scale=.5}\hfill
+\pic{numstack4}{scale=.5}\hfill
+}
+\caption{The fourth tetrahedral number is 20.}
+\end{figure}
+
+Since $T_n = \mchoose{n}{2}$, and using Pascal's Identity $\mchoose{n-1}{k} + \mchoose{n}{k-1} = \mchoose{n}{k}$, we can get an explicit formula for $Te_n$.
+\begin{equation}
+Te_n = \mchoose{1}{2}+\dotsb+\mchoose{n}{2} =\mchoose{n}{3} = \frac{n(n+1)(n+2)}{6}
+\end{equation}
+
+This suggests another geometric proof by picture --- a rectangular prism split into six tetrahedral numbers of the same size.
+
+\begin{figure}
+\centerline{\hfill
+\pic{blockssplit1}{scale=1} \hfill
+\pic{blockssplit2}{scale=1} \hfill
+\pic{blockssplit3}{scale=1} \hfill }
+\caption{ An $n\times (n+1)\times (n+2)$ rectangular prism can be built up from tetrahedral numbers.  }
+\end{figure}
+
+
+There is more than one way to divide this rectangular prism into tetrahedral numbers.
+
+\begin{figure}
+\centerline{\hfill
+\pic{blockssplit4}{scale=1}\hfill \pic{blockssplit5}{scale=1} \hfill}
+\caption{  Some more decompositions. }
+\end{figure}
+
+To find how many ways there are total, it become useful to generalize to tetrahedra and cubes, instead of tetrahedral numbers and rectangular prisms.
+
+\begin{figure}
+\centerline{\hfill
+\pic{split1}{scale=1} \hfill
+\pic{split2}{scale=1} \hfill
+\pic{split3}{scale=1} \hfill }
+\caption{ One decomposition of the cube into tetrahedra. }
+\end{figure}
+
+{\bf Goal:} Find all the ways there are to decompose a cube into six tetrahedra.  
+
+\section{   Three Dimensions   }
+
+
+
+In a cube, a tetrahedron can be defined as a set of 4 vertices out of the 8 vertices of the cube.  Modding out by symmetry, we find six different varieties of tetrahedra.
+
+We only concern ourselves with those of volume one-sixth of the volume of the cube, since we want a cube made up of six tetrahedra.
+
+\begin{figure}
+\begin{center}
+{\setlength{\tabcolsep}{1.5em}
+\begin{tabular}{ccc}
+\pic{A}{scale=.7}  & \pic{B}{scale=.7}  & \pic{C}{scale=.7} \\
+{\bf A} & {\bf B} & {\bf C}\\
+\pic{D}{scale=.7} &   \pic{degen2}{scale=.7}  & \pic{degen1}{scale=.7}\\
+{\bf D} & {\bf E} &{\bf F} \\
+\end{tabular}}\end{center}
+
+\caption{The six different varieties of tetrahedra, as defined above.}
+\end{figure}
+
+\begin{itemize}
+\item {\bf A} through {\bf C} each have volume $\sfrac{1}{6}$
+\item {\bf D} has volume $\sfrac{2}{6}$. 
+\item  {\bf E} and {\bf F} have no volume, and are not tetrahedra in the traditional sense.
+\end{itemize}
+
+
+{\bf A}'s and {\bf C}'s always come together in pairs, shaped like a square pyramid.\\
+Since two {\bf B}'s can be put together to form the same shape, they can always be replaced for each other.\\
+So the problem is simplified to finding all decompositions made from only {\bf B} tetrahedra, then finding all the ways to replace in {\bf A}'s and {\bf C}'s.
+\medskip\medskip
+\begin{figure}
+\centerline{\hfill\hfill\hfill\pic{ACpyramid}{scale=.7}\hfill
+\pic{BBpyramid3}{scale=.7}
+\hfill\hfill\hfill}
+%\medskip
+%\centerline{\hfill
+%\pic{ACpyramid2}{scale=.7}\hfill
+%\pic{BBpyramid4}{scale=.7}
+%\hfill}
+
+\caption{  {\bf A} + {\bf C} = {\bf B} + {\bf B}.  }
+\end{figure}
+
+
+We can show that there are exactly two decompositions of {\bf B}'s. \\ One generates four more decompositions (Fig. 9(a)-(e)) and the other generates three more (Fig. 9(f)-(i)), for a total of nine.
+
+\columnbreak
+
+\begin{figure}
+\begin{center}
+{\setlength{\tabcolsep}{2em}
+\begin{tabular}{ccc}
+\pic{tiling1}{scale=.5}&\pic{tiling3}{scale=.5}&\pic{tiling5}{scale=.5} \\
+(a)&(b)&(c)\\
+\end{tabular} }
+{\setlength{\tabcolsep}{2.5em}
+\begin{tabular}{cc}
+\pic{tiling7}{scale=.5}&\pic{tiling9}{scale=.5}\\
+(d)&(e)\\
+\end{tabular}}
+{\setlength{\tabcolsep}{.5em}
+\begin{tabular}{cccc}
+\pic{tiling2}{scale=.5}&\pic{tiling4}{scale=.5}&\pic{tiling6}{scale=.5}&\pic{tiling8}{scale=.5}\\
+(f)&(g)&(h)&(i)\\
+\end{tabular} } \end{center}
+\caption{The nine decompositions of the cube.}
+\end{figure}
+
+
+
+\section{  Higher Dimensions }
+
+\subsection{ Simplicial Numbers}
+\begin{itemize}
+\item The sum of integers is a triangular number.
+\item The sum of triangular numbers is a tetrahedral number.
+\item So what is the sum of tetrahedral numbers?
+\end{itemize}
+
+We can return to the idea of multichoose to show that 
+\begin{equation}
+Te_1+\dotsb+Te_n = \mchoose{1}{3}+\dotsb+\mchoose{n}{3} = \mchoose{n}{4} =\textstyle \frac{n(n+1)(n+2)(n+3)}{24}
+\end{equation}
+
+We refer to numbers of this sort as \emph{simplicial numbers}. 
+
+
+\newcommand{\scalesize}{.3}
+\begin{figure}
+\begin{center}
+{\setlength{\tabcolsep}{.5em}
+\begin{tabular}{ccccccccc}
+%\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{2ex}{=}&
+%\pic{line4}{scale=\scalesize} \\
+%$\mchoose{1}{0}$&+&$\mchoose{2}{0}$&+&$\mchoose{3}{0}$&+&$\mchoose{4}{0}$&=&$\mchoose{4}{1}$ \\\\
+\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{2ex}{+} &\raisebox{1ex}{\pic{line2}{scale=\scalesize}} & \raisebox{2ex}{+} &\raisebox{.5ex}{\pic{line3}{scale=\scalesize}} & \raisebox{2ex}{+}& \pic{line4}{scale=\scalesize} &\raisebox{2ex}{=}&
+\pic{t4}{scale=\scalesize} \\
+$\mchoose{1}{1}$&+&$\mchoose{2}{1}$&+&$\mchoose{3}{1}$&+&$\mchoose{4}{1}$&=&$\mchoose{4}{2}$ \\\\
+\raisebox{3ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{t2}{scale=\scalesize}} & \raisebox{3ex}{+} &
+\raisebox{1ex}{\pic{t3}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{.5ex}{\pic{t4}{scale=\scalesize}} & \raisebox{3ex}{=}&
+\pic{te4}{scale=\scalesize} \\
+$\mchoose{1}{2}$&+&$\mchoose{2}{2}$&+&$\mchoose{3}{2}$&+&$\mchoose{4}{2}$&=&$\mchoose{4}{3}$ \\\\
+\raisebox{3ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{te2}{scale=\scalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{te3}{scale=\scalesize}} & \raisebox{3ex}{+} &\pic{te4}{scale=\scalesize} &\raisebox{3ex} =&
+\raisebox{3ex}{\textcolor{blue}{\large ?}} \\
+$\mchoose{1}{3}$&+&$\mchoose{2}{3}$&+&$\mchoose{3}{3}$&+&$\mchoose{4}{3}$&=&$\mchoose{4}{4}$ \\
+\end{tabular}
+}
+\end{center}
+\caption{ Simplicial Numbers }
+\end{figure}
+
+
+
+Loosely, a $d$-simplex is the simplest $d$-dimensional shape.  It has $d+1$ vertices, and $d+1$ $(d-1)$-simplicial faces.  
+
+\begin{itemize}
+\item The triangle is the $2$-dimensional simplex.
+\item The tetrahedron is the $3$-dimensional simplex.
+\item The pentachoron, or $5$-cell, is the $4$-dimensional simplex.
+\end{itemize}
+
+\begin{figure}
+\begin{center}
+{\setlength{\tabcolsep}{2em}
+\begin{tabular}{ccc}
+\pic{s0}{scale=.5}&
+\pic{s1}{scale=.5}& 
+\pic{s2}{scale=.5}
+\end{tabular}}
+{\setlength{\tabcolsep}{2em}
+\begin{tabular}{cc}
+\pic{s3}{scale=.5}&
+\pic{s4}{scale=.5}
+\end{tabular}}
+\end{center}
+\caption{ The 0, 1, 2, 3, and 4 dimensional simplices:  a point, a line segment, a triangle, a tetrahedron, and a 5-cell.  }
+\end{figure}
+
+We recursively define the $n$th $d$-simplicial number, $\Delta_n^d$ to be
+\begin{equation}
+\Delta_n^d = \Delta_1^{d-1}+\Delta_2^{d-1}+\dotsb+\Delta_n^{d-1}
+\end{equation}
+
+Using Pascal's Identity again, we find the explicit formula
+\begin{equation}
+\Delta_n^d = \mchoose{n}{d} = \frac{ n(n+1)(n+2) \dotsb (n+d-1) }{d!}
+\end{equation}
+
+This suggests that a $d$-dimensional rectangular prism can be divided into $d!$ $d$-simplicial numbers.  We can again generalize to $d$-simplices and $d$-cubes.
+
+{\bf Goal:} Find all the ways there are to decompose a $d$-cube into $d!$ $d$-simplices. 
+
+\subsection{ How to Decompose the $d$-Cube into Simplices }
+
+We can make an algorithm to find all possible decompositions.
+
+Modding out by symmetry is more difficult in higher dimensions than three, and so we refer to a particular simplex by its vertices in the \emph{labeled} cube.
+
+\begin{enumerate}[{\bf Step 1.}]
+\item List all simplices as sets of $d+1$ vertices out of the $2^d$ vertices of the cube.
+	\begin{itemize}
+	\item[--] There are ${ 2^d \choose d+1}$ such simplices.
+	\end{itemize}
+\item Remove all but those with volume $\sfrac{1}{d!}$.
+	\begin{itemize}
+	\item[--] This can be done by putting the coordinates of $d$ vertices of the simplex in a matrix, subtracting the last vertex from each column, and taking the determinant of the new matrix.
+	\end{itemize}
+\item For each pair in this list, determine whether or not they are disjoint (do not intersect).
+	\begin{itemize}
+	\item[--] If they are disjoint, there exists some vector ${\bf u}$, where the projections of the two simplices onto that line are disjoint.
+	\item[--] In other words, if ${\bf x}_1,\dotsc,{\bf x}_{d+1}$ are the vertices of one simplex, and ${\bf y}_1,\dotsc,{\bf y}_{d+1}$ are the vertices of the other, then 
+	\begin{equation}
+		{\bf x}_i^T {\bf u} \geq {\bf y}_j^T {\bf u}
+	\end{equation}
+	for all $i, j$.
+	\end{itemize}
+\item Find all sets of $d!$ mutually disjoint simplices.
+	\begin{itemize}
+	\item[--] This is the clique problem, and is NP-complete.  So these sets can only be found through exhaustive search.
+	\end{itemize}
+\item Mod out by symmetry.
+	\begin{itemize}
+	\item[--] Make a list of all $2^d d!$ symmetries of the $d$-cube.
+	\item[--] To determine if two decompositions are equivalent, see if one decomposition is equal to a symmetry of the other.
+	\end{itemize}
+\end{enumerate}
+
+\section{Potential Future Research}
+
+\begin{enumerate}
+\item Find the number of decompositions in an explicit formula terms of the dimension.
+\item Look for ways to make the program more efficient, or develop new methods to solve the problem.
+\item Find all decompositions of the cube into simplices of any volume, not just $\sfrac{1}{d!}$.
+\end{enumerate}
+
+\section{Acknowledgements}
+I would like to express my thanks to my advisor, Prof. Vin de Silva, who helped me with this project all the way through. I would like to thank my second reader, Prof. Towse for reviewing this paper and giving his comments, in addition to introducing me to Prof. de Silva in the first place. Also thanks to Prof. Orrison and Prof. Kuenning for meeting with me occasionally throughout the year to discuss the parts of the project dealing in abstract algebra and computer science.
+
+\end{poster}
+
+
+
+\end{document}
+
