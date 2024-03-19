@@ -4,3 +4,8 @@
 .log
 .fls
 .aux
+.out
+.synctex.gz
+.nav
+.snm
+.toc

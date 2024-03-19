@@ -1,0 +1,1320 @@
+\documentclass[12pt]{scrippsthesis}
+
+%\topmargin = -1in
+%\textheight = 9in
+%\textwidth = 6.5in
+%\oddsidemargin = -.3in
+%\pagestyle{empty}
+
+\usepackage{url}
+
+\usepackage{hyperref}
+
+%\usepackage{glossaries}
+%\makeglossaries
+
+
+
+
+
+\usepackage[parfill]{parskip}
+%\setlength{\parskip}{2ex}
+%\setlength{\parindent}{0em}
+
+\usepackage{amssymb,float,graphicx,amsmath,graphicx,epstopdf,url,enumerate,wasysym}
+\usepackage{pb-diagram}
+
+\usepackage[usenames]{color}
+
+\usepackage{pgf}
+\usepackage{tikz}
+
+
+\usepackage[margin=.5in, font=small,format=plain,labelfont=bf,up,textfont=it,up]{caption}
+
+
+\title{Decomposing the $d$-Cube into Simplices}
+\author{Bentley Storlie}
+\date{\today}
+\advisor{Vin de Silva}
+\reader{Christopher Towse}
+
+
+\newcommand{\pic}[2]{\includegraphics[#2]{/Users/Ben/Dropbox/Thesis/Pictures/#1.pdf}}
+\newcommand{\mchoose}[2]{{\textstyle \left( \! {#1 \choose #2} \! \right)}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+
+\usepackage{amsthm}
+\newtheorem{thm}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+\theoremstyle{plain}
+\newtheorem{lem}[thm]{Lemma}
+
+%\topmargin 0 in
+%\headsep 0 in
+%\addtolength{\textheight}{.2in}
+
+
+
+
+
+\begin{document}
+\parindent=0pt
+
+\maketitle
+\tableofcontents
+\listoffigures
+
+
+\begin{abstract}
+
+We develop an algorithm to determine how many ways there are to decompose a $d$-cube into simplices each with volume $\frac{1}{d!}$.  Given two simplices in the cube, we determine whether they are disjoint, and then find all the ways to combine $d!$ mutually disjoint simplices.  These are then sorted under the action of the hyperoctahedral group $B_d$.  We also discuss how simplicial numbers of the same size fit together to form rectangular prisms, and how this relates to the formula for multichoose.  A proof for the three-dimensional case is given directly, instead of by the described algorithm. 
+
+\end{abstract}
+
+
+\chapter{Triangular Numbers and Motivation}
+
+
+%\newglossaryentry{triangular number}{
+%  name=triangular number,
+%  description={ is a number in the form $1+2+3+\dotsb+n$, where $n\in\N$. Is also equal to $\mchoose{n}{2}=\frac{n(n+1)}{2}$.  The $n$th triangular number is denoted $T_n$}
+%}
+%\newglossaryentry{tetrahedral number}{
+%  name=tetrahedral number,
+%  description={ is a number in the form $1+(1+2)+(1+2+3)+\dotsb+(1+\dotsb+n)$, where $n\in\N$. The $n$th tetrahedral number is denoted $Te_n$, and is equal to the sum of the first $n$ triangular numbers, and $Te_n=\mchoose{n}{3}=\frac{n(n+1)(n+2)}{6}$  }
+%}
+%
+%\newglossaryentry{figurate number}{
+%  name=figurate number,
+%  description={ A number of discrete blocks or balls that can be stacked together to form the shape of a geometric object.  The associated objects could be in any dimension.  Figurate numbers include polygonal numbers (including triangular numbers) and polyhedral numbers (including tetrahedral numbers).  }
+%}
+
+
+Triangular numbers are numbers that are 'shaped' like triangles.  More precisely, they re the sum of the integers $1$ through $n$ inclusive, where $n$ is any positive integer.
+\begin{equation}T_n = 1 + 2 + \dotsb + n. \end{equation}
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{numtri}{scale=.5}\hfill
+}
+\caption{ The fourth triangular number. $T_4=1+2+3+4=10$. }
+\end{figure}
+
+We can take advantage of the triangular shape to find an explicit formula for $T_n$.  The area of a triangle is one-half base times height, since two identical triangles fit together to form a rectangle with area base times height.  Two triangular numbers $T_n$ fit together to form a rectangle with area $n \times (n+1) $, as shown in Figure~\ref{fig:proofbypicture}.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{sq4by5}{scale=.5}\hfill
+}
+\caption{ Proof by picture that $T_n = \frac{n(n+1)}{2}$.}
+\label{fig:proofbypicture}
+\end{figure}
+
+So $T_n = 1 + 2 + \dotsb + n = \frac{n(n+1)}{2}$.  (Note that as $n$ approaches infinity, $T_n$ approaches $\frac{n^2}{2}$.)
+
+Tetrahedral numbers are numbers that are numbers that are shaped like tetrahedra.  The $n$th tetrahedral number, denoted $Te_n$, is the sum of the first $n$ triangular numbers.
+\begin{equation}Te_n = T_1 + T_2 + \dotsb + T_n. \end{equation}
+
+
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{numstack1}{scale=.4}\hfill
+\pic{numstack2}{scale=.4}\hfill
+\pic{numstack3}{scale=.4}\hfill
+\pic{numstack4}{scale=.4}\hfill
+}
+\caption{ The fourth tetrahedral number is $1+3+6+10=20$. }
+\end{figure}
+
+
+In the following sections, we answer the questions
+\begin{enumerate}
+\item Is there an explicit formula for tetrahedral numbers?
+\item If tetrahedral numbers are the sum of triangular numbers, what are the sum of tetrahedral numbers?
+\item Is there an explicit formula for those?
+\item Are these formulas related to each other in any way?
+\item Is there a proof without words for the explicit formula of the tetrahedral numbers?
+\end{enumerate}
+
+In later chapters, we will look at how many ways there are to decompose a cube into tetrahedra, and more generally, a hypercube into simplices.
+
+\section{ Triangular Numbers, Tetrahedral Numbers, and Multichoose }
+
+%\newglossaryentry{multichoose}{
+%  name=multichoose,
+%  description={ written $\mchoose{n}{k}$,  pronounced "$n$ {\bf multichoose} $k$" and answers the question "how many ways are there to choose $k$ things from $n$ different kinds of things?" -- or, "how many multisets are there of size $k$, out of $n$ different elements?"  (A multiset is a set where an element can be included more than once.)
+%  $\mchoose{n}{k}=\frac{(n+k-1)!}{k!(n-1)!}=\frac{n(n+1)\dotsb(n+k-1)}{k!}$ }
+%}
+
+
+Triangular and tetrahedral numbers are related to the combinatorial concept of multichoose.
+
+\begin{dfn}
+A \emph{multiset} is a set where an element my be included more than once.  Similar to regular sets, the order does not matter.  The cardinality of a multiset if number of elements, but not the number of distinct elements.  For example, $\{a,a,b,c,c,c\}$ is a multiset with cardinality $6$.
+\end{dfn}
+
+\begin{dfn}
+The notation $\mchoose{n}{k}$, pronounced ``$n$ \emph{multichoose} $k$'' represents the number of multi sets of cardinality $k$ whose elements are chosen from a set of cardinality $n$.  Explicitly, $\mchoose{n}{k}=\frac{n(n+1)\dotsb(n+k-1)}{k!}$
+\end{dfn}
+
+
+Observe that $\mchoose{n}{2}=\frac{n(n+1)}{2} = T_n$.  We can see that this should be true graphically as well as algebraically by making a chart.  For example, consider $\mchoose{4}{2}$, which answers the question ``How many multisets of cardinality $2$ (i.e. unordered pairs) are there whose elements are chosen from a set of four elements?''  By answering this, we will construct a the fourth triangular number.  Let the unordered pairs be chosen from four colors: red, green, blue, and yellow.  The $4\times4$ chart in Figure~\ref{fig:4mchoose2} shows every ordered pair of two colors.  The doubles are crossed out to show just every \emph{un}ordered pair.  The result is the the ten unordered pairs in the form of a triangle.
+
+	\begin{figure}[H]
+	\centerline{
+	\pic{4mchoose2}{width=2in}}
+	\caption{How many multisets are there of cardinality 2 chosen from four different colors?  Shown is every ordered pair, with the doubles crossed off.}
+	\label{fig:4mchoose2}
+	\end{figure}
+
+The first row shows every multiset which includes red.  The next three rows taken together are $\mchoose{3}{2}$, since they are the multisets chosen from three colors: green, blue, and yellow.  So the second row is every multiset which includes green, but does not include red.  The third is row every multiset which includes blue, but not red or green.  And the final row is the multisets which only includes yellow.  The final row just has one pair in it because there is only one multiset chosen from one color.  All these rows summed together are $1+2+3+4=T_n$.
+
+Similarly, we can show that $\mchoose{n}{3}=Te_n$.  Figure~\ref{fig:4mchoose3} shows a chart with every ordered triple of the four colors, with repeats crossed out to just show the unordered triples.
+
+	\begin{figure}[H]
+	\centerline{
+	\pic{4mchoose3}{width=5.5in}}
+	\caption{How many ways are there to multichoose three balls from four different colors?  Shown is the four levels of a three-dimensional chart. }
+	\label{fig:4mchoose3}
+	\end{figure}
+
+The first level on the left shows every triple which includes red.  It is the fourth triangular number and is $\mchoose{4}{2}$.  This is because the first color chosen is red, but there are still two colors which could be chosen from any of the four.  The rest of the levels are those without red, and so sum to $\mchoose{3}{3}$.  Continuing as before, we can conclude that 
+
+\begin{equation}\begin{split}
+	\mchoose{4}{3} &= \mchoose{4}{2}+\mchoose{3}{2}+\mchoose{2}{2}+\mchoose{1}{2}\\
+	&=T_4+T_3+T_2+T_1\\
+	&=Te_4
+\end{split}\end{equation}
+
+These ideas illustrate Pascal's Identity \cite{Pixley}:
+\begin{equation}
+\mchoose{n}{k} = \mchoose{n}{k-1} + \mchoose{n-1}{k}.
+\end{equation}
+
+This expands to:
+\begin{equation}
+\mchoose{n}{k}=\mchoose{n}{k-1}+\mchoose{n-1}{k-1}+\dotsb+\mchoose{2}{k-1}+\mchoose{1}{k-1}
+\label{eq:hockeystick thm}
+\end{equation}
+
+Since $T_n=\mchoose{n}{2}$, we have $Te_n=T_1+\dotsb+T_n=\mchoose{1}{2}+\dotsb+\mchoose{n}{2}=\mchoose{n}{3}$.  From this we get an explicit formula for the $n$th tetrahedral number.
+
+\begin{equation}
+Te_n=\frac{n(n+1)(n+2)}{6}
+\end{equation}
+
+
+
+%The triangular number formula $\frac{n(n+1)}{2}$ also happens to be the formula for $\mchoose{n}{2}$, or $n$ multichoose $2$.  This is not coincidental.  Multichoose, written $\mchoose{n}{k}$ and  pronounced "$n$ {\bf multichoose} $k$," and answers the question "how many ways are there to choose $k$ things from $n$ different kinds of things?" --- or, "how many multisets are there of size $k$, out of $n$ different elements?"  (A multiset is a set where an element can be included more than once.)
+%  $\mchoose{n}{k}=\frac{(n+k-1)!}{k!(n-1)!}=\frac{n(n+1)\dotsb(n+k-1)}{k!}$
+%
+%
+%
+%
+%Take the $4$th triangular number for example.  $\mchoose{4}{2}=\frac{4\cdot5}{2}=10$.  So there should be ten unordered pairs of four elements.  Let these element be the colors red, green, blue, and yellow.  There could be a collection of colored balls, and we want to pick just two of them.  We could pick any of the four colors first, and then pick any of the four colors second.  Below is a chart of all the ordered pairs of colors.  However, we want unordered pairs, since the set \{red, blue\} is the same as the set \{blue, red\}.  So we can cross out the repeat choices.
+
+
+
+%The result is the fourth triangular number.  But the triangular shape might just have been an artifact of which pairs were crossed out, and has nothing to do with multichoose.
+
+%	\begin{figure}[H]
+%	\centerline{
+%	\pic{4mchoose22}{width=1.5in}}
+%	\caption{Another way to show how many ways there are to \gls{multichoose} two balls from four different colors.  It does not show the shape of a triangle.}
+%	\end{figure}
+
+%The first row is every combination that includes red.  The next three rows comprise the third triangular number.  This makes sense, because it is every combination of two out of only three colors.  This leads to Pascal's Identity $\mchoose{n}{2}=\mchoose{n-1}{2}+\mchoose{n}{1}$.  More generally, Pascal's Identity \cite{Pixley} is
+%
+%\begin{equation}
+%\mchoose{n}{k}=\mchoose{n-1}{k}+\mchoose{n}{k-1}.
+%\label{eq:pascal's identity}
+%\end{equation}
+%
+%This dividing however, can continue.  $\mchoose{3}{2}$ can be broken up into $\mchoose{3}{1}$ --- every combination with green and without red --- and $\mchoose{2}{2}$ --- every combination without red or green.  And $\mchoose{2}{2}=\mchoose{2}{1}+\mchoose{1}{1}$  This process can be used to prove inductively that
+%
+%
+%\begin{equation}\begin{split}
+%	\mchoose{n}{2}&=\mchoose{1}{1}+\mchoose{2}{1}+\dotsb+\mchoose{n}{1} \\
+%       &=1+2+\dotsb+n
+%\end{split}\end{equation}
+%
+%Which was our definition for a triangular number, and shows why the rows form a triangle.  In many ways it is not coincidental that $T_n=\mchoose{n}{2}$.
+%
+%Consider $\mchoose{n}{3}$, the number of ways to choose three colored balls.  The figure below shows every ordered triple of red, green, blue, and yellow.  With the repeats crossed out to show all the unordered triples, we get a tetrahedron.  The first square shows every triple which includes red.  The second square shows every triple which includes green, but does not include red.  The third are those which include blue, but not red or green.  And the fourth is those which include yellow, but nothing else.
+%
+%
+%
+%Each level of this chart shows a smaller and smaller triangular number, adding up to a tetrahedral number.  The first level, with every triple that includes red, is where red is chosen first, and we can freely multichoose the remaining two colors.  The number of ways to do this is $\mchoose{4}{2}=T_4$, which is why it is a triangular number.  In the second level, green was chosen first, and the remaining two colors are chosen out of green, blue, and yellow, so we get $\mchoose{3}{2} = T_3$.  
+%
+%So we have that
+%
+%\begin{equation}
+%\mchoose{4}{3} = Te_4 = T_1+T_2+T_3+T_4 = \sum_{i=1}^4 \mchoose{i}{2}
+%\end{equation}
+%
+%Since tetrahedral numbers are the sum of the first $n$ triangular numbers, we can use this to find an explicit formula for $Te_n$.
+%
+%\begin{equation}\begin{split}
+%	Te_n &= \mchoose{1}{2}+\mchoose{2}{2}+\dotsb+\mchoose{n}{2} \\
+%     &= \mchoose{n}{3} \\
+%     &= \frac{n(n+1)(n+2)}{6}
+%\end{split}\end{equation}
+%
+%
+%
+%
+%By expanding Pascal's Identity from Equation~\ref{eq:pascal's identity}
+%
+%\begin{equation}
+%\mchoose{n}{k}=\mchoose{1}{k-1}+\mchoose{2}{k-1}+\dotsb+\mchoose{n}{n-k}
+%\label{eq:hockeystick thm}
+%\end{equation}
+
+This implies that the sum of the first $n$ tetrahedral numbers is $\mchoose{n}{4}$, and suggests there is some four-dimensional geometric object that represents those numbers.  And the sum of the first $n$ of those is $\mchoose{n}{5}$, represented by some five-dimensional object.
+
+\newcommand{\scalesize}{.2}
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{ccccccccc}
+\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} &\raisebox{2ex}{+} &\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{2ex}{=}&
+\pic{line4}{scale=\scalesize} \\
+$\mchoose{1}{0}$&+&$\mchoose{2}{0}$&+&$\mchoose{3}{0}$&+&$\mchoose{4}{0}$&=&$\mchoose{4}{1}$ \\\\
+\raisebox{2ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{2ex}{+} &\raisebox{1ex}{\pic{line2}{scale=\scalesize}} & \raisebox{2ex}{+} &\raisebox{.5ex}{\pic{line3}{scale=\scalesize}} & \raisebox{2ex}{+}& \pic{line4}{scale=\scalesize} &\raisebox{2ex}{=}&
+\pic{t4}{scale=\scalesize} \\
+$\mchoose{1}{1}$&+&$\mchoose{2}{1}$&+&$\mchoose{3}{1}$&+&$\mchoose{4}{1}$&=&$\mchoose{4}{2}$ \\\\
+\raisebox{3ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{t2}{scale=\scalesize}} & \raisebox{3ex}{+} &
+\raisebox{1ex}{\pic{t3}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{.5ex}{\pic{t4}{scale=\scalesize}} & \raisebox{3ex}{=}&
+\pic{te4}{scale=\scalesize} \\
+$\mchoose{1}{2}$&+&$\mchoose{2}{2}$&+&$\mchoose{3}{2}$&+&$\mchoose{4}{2}$&=&$\mchoose{4}{3}$ \\\\
+\raisebox{3ex}{\pic{0cube}{scale=\scalesize}} & \raisebox{3ex}{+}& \raisebox{2ex}{\pic{te2}{scale=\scalesize}} & \raisebox{3ex}{+} &\raisebox{1ex}{\pic{te3}{scale=\scalesize}} & \raisebox{3ex}{+} &\pic{te4}{scale=\scalesize} &\raisebox{3ex} =&
+\raisebox{3ex}{\textcolor{blue}{\large ?}} \\
+$\mchoose{1}{3}$&+&$\mchoose{2}{3}$&+&$\mchoose{3}{3}$&+&$\mchoose{4}{3}$&=&$\mchoose{4}{4}$ \\
+\end{tabular}
+\end{center}
+\caption{ A graphical illustration of Equation~\ref{eq:hockeystick thm}.   }
+\end{figure}
+
+%\newglossaryentry{simplex}{
+%  name=simplex, plural=simplices,
+%  description={ An $r$-simplex is the simplest geometric object in $r$-dimensions.  In terms of graph theory, simplices look like the complete graph on $(r+1)$ vertices.  The $r$-simplex is the cone over the $(r-1)$-simplex.  That is, another vertex was added that shares an edge with every vertex in the $(r-1)$-simplex. }
+%}
+
+\section{Simplicial Numbers}
+
+Triangles and tetrahedra are part of a class of objects called simplices (singular: simplex).  An $d$-simplex is the simplest geometric object in $d$-dimensions.  In terms of graph theory, simplices look like the complete graph on $(d+1)$ vertices.  The $d$-simplex is the cone over the $(d-1)$-simplex.  That is, another vertex was added that shares an edge with every vertex in the $(d-1)$-simplex.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{s0}{scale=.5}\hfill
+\pic{s1}{scale=.5}\hfill
+\pic{s2}{scale=.5}\hfill
+}
+\centerline{\hfill
+\pic{s3}{scale=.5}\hfill
+\pic{s4}{scale=.5}\hfill
+}
+\caption{The 0, 1, 2, 3, and 4 dimensional simplices:  a point, a line segment, a triangle, a tetrahedron, and a 5-cell or pentachoron.}
+\end{figure}
+
+%\newglossaryentry{5-cell}{
+%  name=5-cell,
+%  description={ Otherwise known as a {\bf pentachoron}, the 5-cell is the 4-simplex.  It has five vertices, 10 edges, 10 faces, and five 3-dimensional cells.  }
+%}
+
+%\newglossaryentry{simplicial polytopic number}{
+%  name=simplicial polytopic number,
+%  description={ The figurate numbers associated with simplices.  The $n$th simplicial polytopic number in $r$ dimensions is equal to $\mchoose{n}{r}=\frac{n(n+1)\dotsb(n+r-1)}{r!}$  }
+%}
+%
+%\newglossaryentry{5cell}{
+%  name=5cell
+%  description={ Otherwise known as a {\bf pentachoron}, the 5-cell is the 4-simplex.  It has five vertices, 10 edges, 10 faces, and five 3-dimensional cells.}
+%}
+
+The simplices up to three dimensions are familiar: the point, line segment, triangle, and tetrahedron.  The four-dimensional simplex is a 5-cell, or pentachoron.  These two terms are both used, but 5-cell is more common.  A "cell" is the three-dimensional analog to the 2D face. Most common 4D objects have cells into the hundreds, where the Greek names become cumbersome.
+
+Simplices are intimately related to one another.  A line-segment is made of two points, a triangle is made of three line segments, a tetrahedron is made of four triangular faces, and 5-cell is made of five tetrahedral cells.  Each simplex is made of lower-dimensional simplices.
+
+The figurate numbers associated with simplices are called simplicial polytopic numbers and are those in the form $\mchoose{n}{d}$.  There are linear numbers (the positive integers) and the familiar triangular and tetrahedral numbers.  The four-dimensional versions are called "pentatope numbers," and are the sum of tetrahedral numbers.
+
+
+
+\section{ A Three-Dimensional Proof Without Words }
+
+
+Our original method for finding the explicit formula for $T_n$ was to make a $n \times (n+1)$ rectangle and divide it into two triangular parts.  The tetrahedral number formula
+\begin{equation}
+Te_n = \frac{n(n+1)(n+1)}{6}
+\end{equation}
+ suggests that we can make an $n \times (n+1) \times (n+2) $ rectangular prism and divide it into six equal tetrahedral numbers.  In fact, we can.
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{ccc}
+	\pic{blocks1}{scale=.4} & \pic{blocks2}{scale=.4} &
+	\pic{blocks3}{scale=.4} \\\\ \pic{blocks4}{scale=.4} &
+	\pic{blocks5}{scale=.4} & \pic{blocks6}{scale=.4} \\
+\end{tabular}
+\end{center}
+\caption{ An $n\times (n+1)\times (n+2)$ rectangular prism can be built up from tetrahedral numbers.  }
+\label{fig:blocks}
+\end{figure}
+
+Through casual experimentation, it becomes clear that there are many ways to build up a rectangular prism from equal tetrahedral numbers.  Two more are shown in Figure~\ref{fig: more blocks}.  
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{blocks7}{scale=.4}\hfill
+\pic{blocks8}{scale=.4}\hfill
+}
+\caption{ Two rectangular prisms made out of equal tetrahedral numbers distinct from the arrangement in Figure~\ref{fig:blocks}. }
+\label{fig: more blocks}
+\end{figure}
+
+
+Since $\mchoose{n}{4}=\frac{n(n+1)(n+2)(n+3)}{24}$, this suggests that there is a $n\times(n+1)\times(n+2)\times(n+3)$ four-dimensional "rectangular prism prism", that can be divided into 24 pentatope numbers.  The same suggestion holds in $d$-dimensions, where $d!$ $d$-simplicial numbers together make a $n\times\dotsb\times(n+d-1)$ box.  One expects multiple ways of arranging the simplicial numbers.  We will explore this later.
+
+
+
+
+
+% Recall familiar "proof without words" for the nth triangular number
+
+
+% If triangular numbers are multichoose 2, then tetrahedral numbers are multichoose 3.
+
+% It would make sense that there should be an analogous "proof without words" for three dimensions and tetrahedral numbers.
+
+% What about an arbitrary n-dimension?
+
+%\subsection{The Binomial Coefficient and Multichoose}
+%
+%The binomial coefficient, written ${n\choose k}$ and said ``$n$ choose $k$'', is how many ways to choose $k$ things from $n$ things.
+%$${n\choose k}=\frac{n!}{k!(n-k)!}=\frac{n(n-1)(n-2)\dotsb(n-k+1)}{k!}$$
+%Multichoose is when an item can be chosen more than once.  It is like a multiset, where an element can be in the set more than once.
+%$$\mchoose{n}{k}={n+k-1\choose k}=\frac{(n+k-1)!}{k!(n-1)!}=\frac{n(n+1)(n+2)\dotsb(n+k-1)}{k!}$$ 
+%
+%Suppose there are four balls, colored red, green, blue, and yellow.  There is exactly one way to choose none of them, ${4\choose 0}=1$.  There is four ways to choose one, since each ball could be chosen, ${4 \choose 1}=4$.  To choose two balls, you could choose one ball first (4 ways), then choose another from the remaining three (3 ways).  This gives $4\cdot3=12$.  But this gives an ordered pair -- one is always first.  The red ball could be first, and then the blue ball could be chosen, but choosing them in the opposite order -- blue then red -- is the same choice.  The red and blue ball were still chosen, so twelve should be divided in half to give an accurate count.  So ${4\choose 2}=\frac{4\cdot 3}{2}=6$.  ${4\choose3}={4\choose1}$, since the choice is which one of the four balls will not be chosen.  There is one way to choose all four balls, and ${4\choose4}={4\choose0}$.
+%
+%For multichoose, $\mchoose{4}{0} = {4\choose0}$ and $\mchoose{4}{1}= {4\choose1}$, since there is no way to choose more than one of the same color ball.  To multichoose two, there are all the same combinations from ${4\choose2}$, plus four extra: two red, two green, two blue, and two yellow.  $\mchoose{4}{3}$ has even more combinations, because there could be balls of all different colors, two the same and one different, or all three the same.
+
+%\begin{dfn}
+%The {\bf binomial coefficient} is written ${n \choose k}$ and pronounced "$n$ choose $k$."  It answers the question "how many ways are there to choose $k$ things from $n$ things?"  $${n\choose k} = \frac{n!}{k!(n-k)!}=\frac{n(n-1)\dotsb(n-k+1)}{k!}$$
+%\end{dfn}
+%
+%\begin{dfn}
+%$\mchoose{n}{k}$ is pronounced "$n$ {\bf multichoose} $k$" and answers the question "how many ways are there to choose $k$ things from $n$ different kinds of things?"  $$\mchoose{n}{k}=\frac{(n+k-1)!}{k!(n-1)!}=\frac{n(n+1)\dotsb(n+k-1)}{k!}$$
+%\end{dfn}
+%
+%
+%
+%\subsection{Triangular Numbers are Multichoose Two}
+%
+%The formula for the $n$th triangular number is $\frac{n(n+1)}{2}$, which happens to be equal to $\mchoose{n}{2}$.  This is not a coincidence.  
+%
+%
+%
+%	
+%
+%
+%
+%
+%\begin{equation}\sum_{i=1}^n \mchoose{i}{k}=\mchoose{n}{k+1}
+%\label{eq:hockeystick}\end{equation}
+%
+%\begin{equation}\sum_{i=0}^k {n\choose i}={n+1\choose k}\end{equation}
+%
+%\begin{equation} {n\choose k}={n-1 \choose k-1} + {n\choose k-1} \end{equation}
+%
+%The $n$th triangular number is defined as the sum of the first $n$ integers.  Since it is true that $\mchoose{n}{1}=n$, the $n$th triangular number is $\sum_{i=1} \mchoose{i}{1}$.  By the theorem above, this means that the $n$th triangular number is equal to $\mchoose{n}{2} = \frac{n(n+1)}{2}$.
+%
+%The $n$th tetrahedral number is the sum of the first $n$ triangular numbers.  Since the $n$th triangular number is $\mchoose{n}{2}$, by Equation~\ref{eq:hockeystick}, $n$th tetrahedral number is $\mchoose{n}{3} = \frac{n(n+1)(n+2)}{6}$.
+%
+%The triangular number equation came from the $n\times (n+1)$ rectangle cut in two diagonally.  The tetrahedral number equation suggests that it is possible to take a $n\times (n+1) \times (n+2)$ rectangular prism, and divide it into six equal tetrahedra.  Here we do not mean actual tetrahedra, but blocks of tetrahedral numbers.
+%
+%
+
+\section{ As $n$ approaches infinity }
+
+% Talk about as n approaches infinity, triangular numbers approach a triangle, and rectangles approach squares.
+
+% 
+
+%\chapter{Zero, One, and Two Dimensions}
+
+% They are pretty simple blah blah blah.
+
+% Two D gives us two choices, but they are automorphisms.
+
+% Also, choose three vertices from four.
+
+% Is there anything more to say?  Does this merit a section?  Maybe a subsection of the first section.
+
+As the number of blocks approaches infinity, triangular numbers and tetrahedral numbers approach the shape of actual triangles and tetrahedra.  The $n\times (n+1)$ rectangle and the $n\times(n+1)\times(n+2)$ rectangular prism approach a square and a cube respectively.  
+
+\begin{figure}[H]
+\centerline{
+\begin{tabular}{llll}
+\pic{sq0}{scale=.6} &
+\pic{sq1}{scale=.6} &
+\pic{sq2}{scale=.6} &
+\pic{sq4}{scale=.6} \\
+\pic{sq5}{scale=.6}&
+\pic{sq6}{scale=.6}&
+\pic{sq7}{scale=.6}&
+\pic{sq8}{scale=.6}\\
+\end{tabular}}
+\caption{As $n$ approaches infinity, the $n \times n+1$ rectangle made up of two triangular numbers approaches a square made of two triangles.}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\begin{tabular}{ccc}
+	\pic{tetra1}{scale=.5} & \pic{tetra2}{scale=.5} &
+	\pic{tetra3}{scale=.5} \\\\ \pic{tetra4}{scale=.5} &
+	\pic{tetra5}{scale=.5} & \pic{tetra6}{scale=.5} \\
+\end{tabular}
+\end{center}
+\caption{As $n$ approaches infinity, the tetrahedral numbers approach the shape of actual tetrahedra.  This is Figure~\ref{fig:blocks} built of tetrahedra instead of blocks.}
+\end{figure}
+
+Triangles and tetrahedra are easier to deal with than shapes make of blocks, because they can be talked about simply as sets of points.  We also do not have to worry about there being a different answer for different values of $n$.
+
+
+%\newglossaryentry{triangulation}{
+%  name=triangulation,
+%  description={  A way to divide an $n$-dimensional polytope $P$ into $n$-simplices, $S_1,\dotsc,S_k$ such that $S_1 \cup \dotsb \cup S_k=P$, each vertex of each simplex is one of the vertices of $P$, and the intersection of every two (closed) simplices $S_i$ and $S_j$ is a face of any dimension (a vertex, edge, face, etc.) or $S_i \cap S_j = \emptyset$  }
+%}
+
+Now the problem turns into dividing up the square into triangles, dividing up the cube into tetrahedra, and dividing up the $d$-cube into $d$-simplices.  
+
+\begin{dfn}
+A \emph{triangulation} of a $d$-polytope is any decomposition of the polytope into closed $d$-simplices where every vertex of each simples is one of the vertices of the original polytope.  Additionally, the intersection of any two non-disjoint simplices is an entire face of any dimension (a vertex, edge, face, etc.).
+\end{dfn}
+
+\begin{dfn}
+A \emph{quasi-triangulation} of a $d$-polytope is any decomposition of the polytope into closed $d$-simplices where every vertex of each simples is one of the vertices of the original polytope.  Quasi-triangulation differs from regular triangulation in that the only restriction is that the interiors of the simplices are disjoint.  Note that every triangulation is a quasi-triangulation.
+\end{dfn}
+
+
+We are concerned with quasi-triangulations here, since it is still a valid way to decompose the cube.  Simplicial numbers represented as blocks still fit together as a quasi-triangulation.  We will refer to a particular configuration of simplices as a \emph{tiling}.
+
+
+
+  The number of ways to triangulate a convex polygon with $n$ sides was found by Euler and is the $(n-2)$th Catalan number \cite{Pickover}.
+
+\begin{equation}
+C_{n-2}=\frac{1}{n-1} {2(n-2) \choose  n-2}
+\end{equation}
+
+So the number of ways to triangulate the square is $C_{4-2}=2$.  Those two tilings are rotations of each other.
+
+Many people are concerned with the \emph{best} triangulation of the cube, where best usually means the minimal number of simplices needed.  However, "best" is in the eye of the beholder, and here we want to find every tiling, and no tiling is better than another.  And since we are only looking for tilings with $d!$ simplices, minimality is not a concern.
+
+From now on, since we will not be referring to simplicial numbers, but actual simplices, we will use $n$ to refer to the dimension if the cube.
+
+
+
+
+\chapter{Three Dimensions}
+\label{chap: Three Dimensions}
+
+% As opposed to 0-2 dims., there are multiple shapes of tetrahedra.
+
+% Choose four vertices from eight.  Makes sense that there is more variety.
+
+In this section we are interested in triangulating the cube into tetrahedra.
+
+\section{ Different Varieties of Tetrahedra }
+
+To make a tetrahedron, we need a triangle, plus one more vertex.  Suppose initially that one of the triangular faces is on the outside, as shown in Figure~\ref{fig:triangle}.  However, there are four different vertices to choose from on the opposite face from the triangle, and this results in three distinct shapes of tetrahedra.  This means that there are many more options for tilings.  It is important that every distinct tiling is counted.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{chooseverts}{scale=.5}\hfill}
+\caption{ There are four choices for the forth vertex of the tetrahedron.  }
+\label{fig:triangle}
+\end{figure}
+
+
+
+% What do these different tetrahedra look like?  How do they relate back to blocks?
+
+% Volume 0 and volume 2 tetrahedra.  Do they do what we want them to do?  (No, not really.)
+
+The three different varieties of tetrahedra are shown below.  Let us call them {\bf A}, {\bf B}, and {\bf C}.
+\begin{itemize}
+\item {\bf A}s are built of three right isosceles triangles with sides of length $1$, $1$, and $\sqrt{2}$, and one equilateral triangle with sides of length $\sqrt{2}$.
+\item {\bf B}s have two $(1, 1, \sqrt{2})$ right isosceles triangular faces and two $(1,\sqrt{2},\sqrt{3})$ right triangular faces.  
+\item {\bf C}s have one $(1,1,\sqrt{2})$ right isosceles, two $(1,\sqrt{2},\sqrt{3})$ right triangle, and one equilateral face with sides of length $\sqrt{2}$.
+\end{itemize}
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{A}{scale=.5}\hfill
+\pic{B}{scale=.5}\hfill
+\pic{C}{scale=.5}\hfill}
+\caption{From left to right, an {\bf A}, {\bf B}, and {\bf C} tetrahedron.}
+\end{figure}
+
+These can be built as blocks of tetrahedral numbers, and this representation shows the differences between them.  The $2\times2\times2$ case has one block where each vertex is.  This size tetrahedron is made of three blocks in a triangle, plus one more block.  There are four places that the fourth block could go: above the corner, above either of the "legs", or above the empty pocket of space.  These are the {\bf A}, {\bf B}, and {\bf C} tetrahedra.
+
+\begin{figure}[H]
+\centerline{\pic{build-triangle}{width=1in}}
+\caption{The first three blocks for any of the there varieties of tetrahedra.  There are four free spaces above that the fourth block could go.  (The space on the bottom level is not an option, since that would create a square, not a tetrahedron, even though would be the same number of blocks.  This is simply due to the fact that $\mchoose{n}{2}+\mchoose{n-1}{2}=n^2$.)}
+\end{figure}
+\begin{figure}[H]
+\centerline{\hfill
+\pic{build-A}{width=1in}\hfill
+\pic{build-B}{width=1in}\hfill
+\pic{build-B2}{width=1in}\hfill
+\pic{build-C}{width=1in}\hfill}
+\caption{  From left to right, an {\bf A}, two {\bf B}s, and a {\bf C}.  }
+\end{figure}
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{blockA}{scale=.5}\hfill
+\pic{blockB}{scale=.5}\hfill
+\pic{blockC}{scale=.5}\hfill}
+\caption{}
+\end{figure}
+
+
+
+
+
+These tetrahedra are not the only ways to choose four vertices from 8.  They all have three vertices on one side, making a triangle, and one on the other, but that is not the only option.  There are two degenerate tetrahedra that only loosely fit the definition.  They have volume zero and are really rectangles.  But it is a legitimate way to choose four vertices.  Considering these sorts of simplices becomes more relevant in the computer section.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{degen1}{width=1.5in}\hfill
+\pic{degen2}{width=1.5in}\hfill
+}
+\caption{The two "tetrahedra" with volume 0.}
+\end{figure}
+
+Any other tetrahedron does not have a right triangular face on the outside, and so cannot have more than two vertices on every face of the cube.  Therefore, by considering the opposite face, it must have exactly two vertices on each face. This admits just one more possible tetrahedron.  This actually has twice the volume of an {\bf A}, {\bf B}, or {\bf C}.  Let us call it {\bf D}.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{D}{width=2in}\hfill
+}
+\caption{ A {\bf D} tetrahedron. }
+\end{figure}
+
+A tetrahedron of this shape can be constructed from blocks, but not a tetrahedral number of them, not even twice a tetrahedra number.  In fact, it's the sum of two tetrahedral numbers, $Te_{n-2}+Te_n$. Figure~\ref{fig:Dcross} shows graphically how this is true.  Note how as $n$ increases, $Te_{n-2}+Te_n$ approaches $2Te_n$.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{D-blocks}{width=2in}\hfill
+}
+\caption{ A {\bf D} tetrahedron represented by blocks.   }
+\label{D}
+\end{figure}
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{Dblocks1}{width=.2\textwidth}\hfill
+\pic{Dblocks2}{width=.2\textwidth}\hfill
+\pic{Dblocks3}{width=.2\textwidth}\hfill
+\pic{Dblocks4}{width=.2\textwidth}\hfill
+\pic{Dblocks5}{width=.2\textwidth}\hfill
+}
+\caption{ Cross-sections of the $5$th {\bf D} tetrahedron represented as blocks.  The purple blocks show $Te_5$, and the orange blocks show $Te_3$. }
+\label{fig:Dcross}
+\end{figure}
+
+
+
+
+A tiling of the cube can be made with this tetrahedron and four {\bf A} tetrahedra, but with five tetrahedra, not six.  However, this does not correspond to a $n \times (n+1) \times (n+2)$ rectangular prism, but a cube.  So $Te_{n-2}+4Te_{n-1} +Te_n = n^3$, which is similar to $T_{n-1}+T_n = n^2$.\footnote{ This is a consequence of Worpitzky's Identity $n^d = \sum_{m=0}^{d-1} A(d,m) \mchoose{n-m}{d}$, where $A(d,m)$ is an Eulerian number.}  It is still not what we want to focus on
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{Dtiling}{width=2in}\hfill
+\pic{Dtiling-blocks}{width=2in}\hfill
+}
+\caption{ The union of a {\bf D} tetrahedron and five {\bf C}s is a cube, but as blocks they do not form an $n\times (n+1)\times (n+2)$ rectangular prism.  }
+\end{figure}
+
+This is why we will only concern ourselves with simplices with volume ${1\over d!}$ of the volume of the cube.  We will refer to the collection of these as "unit simplices."  So the tetrahedron in Figure~\ref{D} has twice the volume of a unit tetrahedron.  This also enables us to just look for tilings with $d!$ simplices. 
+
+
+\section{The Nine Tilings of a Cube}
+
+In this section we show that there are nine distinct ways to tile the cube with six tetrahedra.  This proof is constructive, so we will see what each of the nine tilings is.
+
+\begin{thm} There are nine distinct ways to quasi-triangulate the $3$-cube with unit tetrahedra.  By distinct we mean one is not any combination of reflections and rotations of any other.
+\end{thm}
+
+
+\subsection{{\bf A}s and {\bf C}s always come in a pair together}
+
+A tiling must have all the volume of the cube filled up, and all the area of its faces.  Since the cube's faces are square, they must be covered by two $(1,1,\sqrt{2})$ triangular faces (like in the 2D case), totaling twelve triangles.  {\bf A} tetrahedra have 3 such faces, {\bf B}s have two, and {\bf C}s have one.  Additionally, there must be six tetrahedra total, to equal the volume of the cube.  If $a$, $b$, and $c$ are the number of {\bf A}, {\bf B}, and {\bf C} tetrahedra, we get the following linear equation:
+\begin{equation}\left[\begin{array}{ccc}1&1&1\\3&2&1\end{array}\right]
+\left[\begin{array}{c}a\\b\\c\end{array}\right]=
+\left[\begin{array}{c}6\\12\end{array}\right].\end{equation}
+This solves to $a=c$, and $b=6-2a$.  So {\bf A}s and {\bf C}s come in pairs together, and {\bf B}s fill up the rest.
+
+A {\bf C} tetrahedron divides the cube into two parts: one part on the side of the equilateral triangular face, and one part on the other side.  Another tetrahedron could only be in one part or the other.  There is only room for one tetrahedron in the first part, and that tetrahedron must be an {\bf A}.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{Cspace1}{width=2in}\hfill
+\pic{Cspace2}{width=2in}\hfill}
+\caption{ The {\bf C} tetrahedron divides the cube into two parts.  On the left is a space with volume one. On the right is a space with volume four. }
+\end{figure}
+
+So if there is an {\bf A} there is a {\bf C}, and if there is an {\bf C}, there is an {\bf A} sharing its equilateral triangular face.  So {\bf A}s and {\bf C}s not only come in pairs, they are always in the same position relative to each other, forming a square pyramid.
+
+\subsection{It is sufficient to find every tiling with only {\bf B} tetrahedra}
+
+Two {\bf B}s could also form a square pyramid, filling the same space.  So if there was a tiling, every {\bf AC} pair could be replaced with a pair of {\bf Bs} to get a tiling with only {\bf B}s.  This is a proper function, since there is only one way to replace an {\bf AC} pair with two {\bf B}s.  A tiling of only {\bf B}s could be transformed into several different tilings by replacing any pair or pairs of {\bf B}s in the shape of a square pyramid with an {\bf AC} pair.  This means that if we can find every possible tiling of only {\bf B} tetrahedra, then we have essentially found all possible tilings.  
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{ACpyramid}{width=2in}\hfill
+\pic{ACpyramid2}{width=2in}\hfill}
+\vspace{.15in}
+\centerline{\hfill
+\pic{BBpyramid}{width=2in}\hfill
+\pic{BBpyramid2}{width=2in}\hfill}
+\caption{The top two show an {\bf AC} pair from two different angles, and the bottom two show it replaced with a pair of {\bf B}s in the same shape.  {\bf A}s are blue, {\bf C}s are yellow, and {\bf B}s are in red and green.}
+\end{figure}
+
+A {\bf B} tetrahedra can be identified uniquely by the three edges of length $1$.  They are in the direction of each of the three dimensions of the cube, and connect to form a path from one corner to the opposite.  The middle edge in the path could define two possible {\bf B}s, as shown below; however, it turns out this edge is sufficient to find all the tilings with only {\bf B} tetrahedra.  This edge will be called a ``{\bf B} edge''.  Those two tetrahedra intersect, however, so only one or the other could be in the final tiling.  This is also the edge that connects the two faces that lie on the surface of the cube.  
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{Bedge}{width=2in}\hfill
+\pic{Bedge2}{width=2in}\hfill}
+\caption{The two {\bf B} tetrahedra defined by the same highlighted {\bf B} edge.}
+\end{figure}
+
+In order to construct a tiling just from assigning {\bf B} edges to edges in the cube, we need some restrictions.  Since there needs to be six tetrahedra total in the tiling, there needs to be exactly six {\bf B} edges.  There needs to be exactly two {\bf B} edges on any given square face of the cube, since one implies a triangular face of half the area of the square.  The two {\bf B} edges could be parallel and on either side of the square, or on adjacent edges.  Note that if they are on adjacent edges, then it is implied which {\bf B} tetrahedra each edge belongs to.  
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{Bacross}{width=1.5in}\hfill
+\pic{Bacross2}{width=1.5in}\hfill\hfill
+\pic{Badjacent}{width=1.5in}\hfill}
+\caption{When the two {\bf B} edges on the same face are adjacent to each other, there is only one possibility for which tetrahedra the {\bf B} edges belong to.  The {\bf B} edges are bolded in the figures.}
+\end{figure}
+
+The third restriction is related to this fact.  Three {\bf B} edges cannot meet at a single vertex.  This would mean that the three square faces meeting at that vertex each have adjacent {\bf B} edges, defining the tetrahedra on that face.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{3vert1}{width=1.5in}\hfill
+\pic{3vert2}{width=1.5in}\hfill
+\pic{3vert3}{width=1.5in}\hfill}
+\caption{ Three {\bf B} edges cannot meet at a single vertex. }
+\end{figure}
+
+So we have three simple rules for where to place {\bf B} edges on the cube:
+\begin{enumerate}
+\item Six {\bf B} edges total.
+\item Exactly two {\bf B} edges on every square face.
+\item No more than two {\bf B} edges on each vertex.
+\end{enumerate}
+
+\begin{figure}[H]
+\begin{tikzpicture}
+    [align=center,yscale=1.8,
+    %\tikzstyle{every node}=[rectangle,draw]
+    level 1/.style={sibling distance=2.6in},
+	level 2/.style={sibling distance=1.5in}, 
+	level 3/.style={sibling distance=1.2in},
+	level 4/.style={sibling distance=.8in}]
+    \node { \parbox{1in}{\center\pic{tree}{width=.6in}\\(a)}}
+        child { 
+        		node {\parbox{1in}{\center\pic{tree1}{width=.6in}\\(b)}} 
+			child {
+				node{\parbox{1in}{\center\pic{tree11}{width=.6in}\\(d)}}
+				child {
+					node{\parbox{1in}{\center\pic{tree111}{width=.6in}\\(g)}}
+				}
+			}
+			child {
+				node{\parbox{1in}{\center\pic{tree12}{width=.6in}\\(e)}}
+				child {
+					node{\parbox{1in}{\center\pic{tree121}{width=.6in}\\(h)}}
+					child {
+						node{\parbox{1in}{\center\pic{tree1211}{width=.6in}\\(k)}}
+					}
+				}
+			}
+		}
+        child {
+            node {\parbox{1in}{\center \pic{tree2}{width=.6in}\\(c)} }
+			child {
+				node{\parbox{1in}{\center\pic{tree21}{width=.6in}\\(f)}}
+				child {
+					node{\parbox{1in}{\center\pic{tree211}{width=.6in}\\(i)}}
+					child {node{\parbox{1in}{\center\pic{tree2112}{width=.6in}\\(l)}}}
+				}
+				child {
+					node{\parbox{1in}{\center\pic{tree212}{width=.6in}\\(j)}}
+					child{node{\parbox{1in}{\center\pic{tree2121}{width=.6in}\\(m)}}}
+				}
+			}
+        }
+    ;
+\end{tikzpicture}
+\caption{ From the three rules of {\bf B} edges, it follows that there are only two distinct tilings with only {\bf B} tetrahedra. Blue edges denote {\bf B} edges, red edges are where there are \emph{no} {\bf B} edges, and gray edges are uncommitted.}
+\label{fig:tree}
+\end{figure}
+
+Figure~\ref{fig:tree} shows a chain of reasoning that results in exactly two tilings with only {\bf B} tetrahedra.  At the top, Figure~\ref{fig:tree}(a) shows a blank cube, drawn as a planar graph.  There are four square faces that are shaped like trapezoids, one small face in the center, and one large square face on the outside.  Blue edges show where {\bf B} edges are, and red edges are where {\bf B} edges cannot be.
+
+The center face has either parallel (b) or adjacent (c) {\bf B} edges.  Because of Rule 3, that three {\bf B} edges cannot meet at a single vertex, the top right edge of (c) has been colored red.
+\begin{itemize}
+\item[(b)] The bottom face has either parallel {\bf B} edges (d), or adjacent ones (e). 
+
+	\begin{itemize}
+	\item[(d)] Since the left face has two red edges, the other two must be {\bf B} edges, and same with the left face (g).
+	
+		\begin{itemize}
+		\item[(g)]  The top face has three {\bf B} edges, which is not allowed by Rule 2.  This configuration is impossible.
+
+		
+		\end{itemize}	
+	
+	\item[(e)] Since the left face has two red edges, by Rule 2, the other two must be {\bf B} edges (h).
+	
+		\begin{itemize}
+		\item[(h)] Since the top face has two {\bf B} edges, by Rule 2, the other two edges must be colored red.  This makes it so the left face has two red edges and one {\bf B} edge, so the remaining edge must be a {\bf B} edge.
+		
+			\begin{itemize}
+			\item[(k)] There are six {\bf B} edges.  Each of the six faces has exactly two {\bf B} edges.  No vertex has more than 2 {\bf B} edges.  This is a valid configuration.
+
+			\end{itemize}
+		
+		\end{itemize}
+	
+	\end{itemize}
+
+\item[(c)] The top face could either have parallel {\bf B} edges or adjacent ones (f).  If the top face had parallel {\bf B} edges, it would have the same configuration as (e), just rotated.  
+
+	\begin{itemize}
+	\item[(f)] The left face has either adjacent (i) or parallel (c) {\bf B} edges.
+	
+		\begin{itemize}
+		\item[(i)] Since the bottom face has two red edges, by Rule 2, the other two must be {\bf B} edges (l).  This makes it so the left face has one red edges and two {\bf B} edges, so the remaining edge must be colored red.
+		
+			\begin{itemize}
+			\item[(l)] There are six {\bf B} edges.  Each of the six faces has exactly two {\bf B} edges.  No vertex has more than 2 {\bf B} edges.  This is a valid configuration.
+			
+			\end{itemize}
+		
+		\item[(j)] Since outside face has two red edges, by Rule 2, the other two must be {\bf B} edges (m).  This makes it so the bottom face has one red edges and two {\bf B} edges, so the remaining edge must be colored red.
+		
+			\begin{itemize}
+			\item[(m)] There are six {\bf B} edges.  Each of the six faces has exactly two {\bf B} edges.  No vertex has more than 2 {\bf B} edges.  This is a valid configuration.
+			
+			\end{itemize}				
+		\end{itemize}	
+	\end{itemize}
+\end{itemize}
+
+Figures~\ref{fig:tree}(k) and ~\ref{fig:tree}(l) are equivalent, since they are just rotations of each other.  
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{diagonals1}{width=2in}\hfill
+\pic{diagonals2}{width=2in}\hfill
+}
+\caption{On the left is configuration (l) and on the right is (k).  There is only one way to assign the orientations of the tetrahedra the {\bf B} edges belong to for both of them.}
+\end{figure}
+
+Let us call these Tiling 1 and Tiling 2.  Note that the lower right halves of these tilings are reflections of each other.
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{Btile1}{width=2.5in}\hfill
+\pic{Btile2}{width=2.5in}\hfill}
+\caption{Tilings 1 and 2.  Both are made of only {\bf B} tetrahedra.}
+\label{fig:tile1and2}
+\end{figure}
+
+Tiling 1 has a nice three-fold axial symmetry.  We still have that one half is a reflection of the corresponding half on the other tiling.  This creates the "X" shape in the middle of Tiling 2.
+
+The rest of the tilings are the different ways that a pair of adjacent {\bf B}s can be replaced with an {\bf AC} pair.  Let us focus on Tiling 1.  
+
+\begin{figure}[H]
+\centerline{\hfill\hfill\hfill\hfill\hfill\hfill
+\pic{hex1}{width=1.5in}\hfill
+\pic{hex2}{width=1.5in}\hfill\hfill\hfill\hfill\hfill\hfill
+} \medskip\medskip
+\centerline{\hfill
+\pic{hex3}{width=1.5in}\hfill
+\pic{hex4}{width=1.5in}\hfill
+\pic{hex5}{width=1.5in}\hfill
+}
+
+\caption{ Tiling 1 shown down the diagonal with different pairs of triangles shaded.}
+\label{fig:hex}
+\end{figure}
+
+Figure~\ref{fig:hex} shows Tiling 1 down the diagonal.  Each triangle is each of the six tetrahedra.  To find the ways to replace {\bf B}s with {\bf A}s and {\bf C}s, we need to choose pairs of adjacent triangles.  There is only one way to choose one pair, since every way to choose one pair can be rotated to look like each other.  There are two ways to choose two pairs, since the remaining two triangles do not have to be adjacent.  Choosing three pairs is really choosing all six tetrahedra, so there is only one way.
+
+So Tiling 1 gives rise to four more distinct tilings.  Tiling 2 only gives rise to three more tilings, since it is impossible to replace three pairs of {\bf B}s in it.  The result is the seven tilings shown below.
+
+
+
+\begin{figure}[H]
+\centerline{\hfill
+\pic{tile3}{width=.25\textwidth}\hfill
+\pic{tile5}{width=.25\textwidth}\hfill
+\pic{tile7}{width=.25\textwidth}\hfill
+\pic{tile9}{width=.25\textwidth}\hfill}
+\centerline{\hfill
+\pic{tile4}{width=.25\textwidth}\hfill
+\pic{tile6}{width=.25\textwidth}\hfill
+\pic{tile8}{width=.25\textwidth}\hfill}
+\caption{ These, in addition to the two tilings in Figure~\ref{fig:tile1and2}, are all the tilings of the $3$-cube.  Note that the top row is generated from Tiling 1, and the bottom row is generated from Tiling 2.  {\bf A}s are blue, {\bf C}s are yellow, and {\bf B}s are red and green. }
+\end{figure}
+
+
+We know that these nine tilings are the only ways to quasi-triangulate the 3-cube with unit tetrahedra because each tiling corresponds to a tiling with only {\bf B} tetrahedra, and there are exactly two of those.
+
+Since Tiling 1 is a triangulation, all the tilings it generates are also triangulations.  Tiling 2 is not a triangulation, and all the tilings it generates are also not triangulations.  It is the 'X' shape in the center that prevents them from being triangulations.
+
+
+
+
+
+
+% Part 1. Linear algebra with faces.  A=C
+
+% Part 2. Pyramids.  A and C go together, two Bs take up the same space.
+
+% Part 3. Three rules of Bs leads to two distinct tilings.
+%		Include how there is only one option for all of the triangular faces.
+
+% Part 4. Show all the different ways to replace BB pyramids with AC pyramids.
+
+\section{Four Dimensions}
+
+% Can we do something similar to three dimensions?
+
+It is tempting to to find an analogous solution for the four dimensional case -- find all the different unit volume $4$-simplices and determine how they fit together.  However, just the first part is not easy, and since there are 24 simplices to fit together, the second part is almost infeasible.  To start off the first part, you could start with one of the three unit tetrahedra, and add a point on the opposite cube-face.  This would get you a unit $4$-simplex.  Since there are 8 vertices on the opposite face, there are $3\times8=24$ ways to find a unit $4$-simplex in that way.  It is highly likely that some of these 24 are isomorphic, so doubles need to be removed.  But also, we do not know that this is the only varieties of $4$-simplices.
+
+To make sure that we have all of them, we can use the computer for help.  First, make a list of all of the ways to choose 5 vertices from 16.  Many of these simplices will not have unit volume, and so those will have to be filtered out.  After that, we need to sort the list modulo automorphism -- which simplices are symmetries of each other.
+
+None of this is unique to four dimensions.  This method could work equally well for an arbitrary dimension.  However, if we are doing all of this on the computer, we might as well do the whole problem.  This leads us into the next chapter.
+
+
+
+% A 3D volume one tetra plus one point will be a volume one penta, but are those all the pentas?
+
+% Quick and dirty computering shows that there are a whole lot of varieties of pentachora are possible, making a similar proof to three dimensions infeasible.
+
+\chapter{Solution to the n-dimensional case with use of computers}
+
+
+I used Matlab to program the described functions.  However, the following descriptions will be as general as possible, only referring to something Matlab-specific when needed.
+
+
+
+% It's easier to find every single tiling, then see which are automorphisms.
+
+\section{Notation}
+\label{sec:notation}
+
+A simplex can be defined just as its vertices, since there is an edge between every vertex.  A simplex can be represented as an $d \times (d+1)$ matrix, where the column vectors are the coordinates of the vertices.  This makes most since for the computer, because there needs to be an order for the vertices.  Really the simplex is an unordered set of vertices.  This means that the order of the columns of the matrix does not matter, because it still refers to the same simplex.  We will use the the symbol $\approx$ to show that two different representations refer to the same simplex.
+
+Generally $\Delta^n$ refers to an $n$-simplex.  A particular simplex will be referred to as $\Delta^n_i$.  Later on, in Section~\ref{sec:Create a List of Simplices}, we will make an ordered list.
+
+\begin{equation}
+\Delta^3_1 \approx
+	\left[\begin{array}{cccc}
+		0 & 1 & 1 & 1\\
+		1 & 0 & 1 & 1\\
+		1 & 1 & 0 & 1
+	\end{array}\right]
+\approx
+	\left[\begin{array}{cccc}
+		1 & 1 & 0 & 1\\
+		0 & 1 & 1 & 1\\
+		1 & 1 & 1 & 0
+	\end{array}\right]
+\approx
+\left\{
+	\left[\begin{array}{c}
+		0\\
+		1 \\
+		1 
+	\end{array}\right]
+,
+\left[\begin{array}{c}
+		1\\
+		0 \\
+		1 
+	\end{array}\right]
+,
+\left[\begin{array}{c}
+		1\\
+		1 \\
+		0 
+	\end{array}\right]
+,
+\left[\begin{array}{c}
+		1\\
+		1 \\
+		1 
+	\end{array}\right]
+\right\}
+\end{equation}
+
+% Give an example with a picture and a matrix.  3D would be best
+
+The only possibilities for the vertices are the corners of the cube.  Each corner is either a vertex of the simplex, or not.  The corners of the cube can be ordered, $1$ through $2^d$.  So a simplex could also be represented as a $2^d \times 1$ binary vector, where the $i$th entry is $1$ if the $i$th corner of the cube is a vertex of the simplices, and $0$ otherwise.  This vector has exactly $d+1$ ones, since there are $d+1$ vertices of a simplex.  Note that the number of possible simplices is ${2^d \choose d+1}$.  
+
+\begin{equation}
+\Delta^3_1 \approx [0 \ 0 \ 0 \ 1\ 0 \ 1 \ 1 \ 1] \approx [4\ 6\ 7\ 8]
+\end{equation}
+
+
+% Show how the above matrix maps to a vector.
+
+In this way, a tiling can be represented as a $2^d \times n!$ binary matrix, with each column vector being a simplex in the tiling.  In this form, a tiling is easily manipulatable.  The action of a  symmetry of the cube on a tiling can be found by representing the symmetry as a permutation matrix, and multiplying it by the tiling matrix.  The resulting tiling is in the orbit of the first.
+
+% Give an example of a tiling.  Probably the nice one from at the beginning.
+% Hit it with a permutation matrix, and show how it's the same thing.
+
+\section{Overview of Program}
+\label{sec: overview of program}
+
+Every tiling is made up of $d!$ simplices, all of which are mutually disjoint.  If there is a set of $d!$ mutually disjoint simplices, and they each have unit volume, then the simplices must form a tiling, since their combined volume makes up the volume of the cube.  Once every such set is found, all that is left to do is to find all the distinct orbits of the tilings.
+
+\section{Create a List of Simplices}
+\label{sec:Create a List of Simplices}
+
+This list should contain every possible variety of simplex in every possible position in the cube.  This is where the vector notation from above is useful.  Start with a list of the binary numbers from $0$ to $2^d-1$.  Then filter out all those but the numbers with $d+1$ ones.
+
+$$
+\begin{array}{cccc}
+0\ 0\ 0\ 0 & 0\ 1\ 0\ 0 & 1\ 0\ 0\ 0 & 1\ 1\ 0\ 0 \\
+0\ 0\ 0\ 1 & 0\ 1\ 0\ 1 & 1\ 0\ 0\ 1 & 1\ 1\ 0\ 1 \\
+0\ 0\ 1\ 0 & 0\ 1\ 1\ 0 & 1\ 0\ 1\ 0 & 1\ 1\ 1\ 0 \\
+0\ 0\ 1\ 1 & 0\ 1\ 1\ 1 & 1\ 0\ 1\ 1 & 1\ 1\ 1\ 1 \\
+\end{array}
+\to
+\begin{array}{cccc}
+\ \ \ \ \ \ \ &  &  & \\
+ &&  & 1\ 1\ 0\ 1 \\
+ &  &  & 1\ 1\ 1\ 0 \\
+ & 0\ 1\ 1\ 1 & 1\ 0\ 1\ 1 &  \\
+\end{array}
+$$
+
+This is sufficient for the two dimensional case; however, for higher dimensional cases, there are simplices with different volumes.  Since we want only unit simplices, further filtering is needed.
+
+Finding the volume of a simplex is relatively easy.  The determinant of a matrix give the volume of the prism formed by the column vectors.  The actual volume of the simplex is ${1\over d!}$ of this, but since unit simplices have volume ${1\over d!}$, it is sufficient to find the volume of the prism.  If the volume of the prism is one, then the corresponding simplex is a unit simplex.
+
+A determinant can only be taken of a square matrix, but the simplex is represented by a $d \times (d+1)$ matrix.  The square matrix is not representing a shape in $d$ dimensions with only $d$ vertices -- the origin is the implied $d+1$th vertex.  The distance and direction the other vertices are from the origin is the column vectors.  To turn the $d \times (d+1)$ matrix into a $d \times d$ that has a determinant, one vertex needs to be chosen to be the "origin."  It does not matter which vertex, because the simplex still has the same volume.  The column vector of the square matrix are the difference between each vertex and the chosen "origin."
+
+\begin{equation}
+\left[\begin{array}{cccc}
+0 & 0 & 1 & 1\\
+1 & 1 & 0 & 1\\
+0 & 1 & 1 & 0\\
+\end{array}\right]
+\to
+\text{abs}\left|\begin{array}{ccc}
+ 0 & 1 & 1\\
+ 0 & -1 & 0\\
+ 1 & 1 & 0\\
+\end{array}\right|
+=1
+\end{equation}
+
+Since those vectors represent the same region of space, no matter what we choose for the origin, the absolute value of the determinant should be the same.  This results from two properties of the determinant
+\begin{enumerate}
+\item Columnwise multilinearity\\
+$\det[{\bf v}_1, ..., a{\bf x}+b{\bf y},...,{\bf v}_n]=
+a\det[{\bf v}_1 ,..., {\bf x},..,{\bf v}_n] +
+b\det[{\bf v}_1 ,..., {\bf y},...,{\bf v}_n] $
+\item Transposing two columns results in the opposite determinant\\
+$\det[{\bf v}_1, ...,{\bf v}_i,...,{\bf v}_j,...,{\bf v}_n]=-\det[{\bf v}_1, ...,{\bf v}_j,...,{\bf v}_i,...,{\bf v}_n]$
+\end{enumerate}
+
+
+
+
+\section{Proof of Disjointness Algorithm}
+
+Since simplices are convex, if two do not intersect, there must be some hyperplane, of dimension $d-1$, that divides them.  Every point of one simplex is on one side of the hyperplane, and every point of the other simplex is on the other side.
+
+Let $X$ and $Y$ be the matrices defining two simplices, as described in Section~\ref{sec:notation}, and let ${\bf u}$ be the unit vector defining the line normal to the hyperplane which divides $X$ and $Y$. The orthogonal projection matrix onto ${\bf u}$ is $P_{\bf u}={\bf u}{\bf u}^T$.  So the projection of a point ${\bf x}_i$ in the simplex $X$ is $P_{\bf u}{\bf x}_i={\bf u}{\bf u}^T{\bf x}_i={\bf u}({\bf u}\cdot{\bf x}_i)$, where ${\bf u}\cdot{\bf x}_i$ is the dot product.  Since every vector projected onto the line is a multiple of ${\bf u}$, they can be defined simply by that scalar.
+
+So the projected simplices should also be disjoint, meaning there is some point which divides the two.  All the projected points of one simplex will be less than or equal to the dividing point, and the points of the other will be greater than or equal to the dividing point.
+
+Let $\{{\bf x}_1,{\bf x}_2,...,{\bf x}_{n+1}\}$ be the points of one simplex, written as vectors, and $\{{\bf y}_1,...,{\bf y}_{n+1}\}$ be the points of the other simplex.  If they are disjoint, then there exists some dividing hyperplane.  Let ${\bf u}$ be a unit vector defining the line normal to that hyperplane.  Then there exists a $k$ such that:
+\begin{equation}\begin{array}{cc}
+{\bf x}_1 \cdot {\bf u} &\leq k \\
+{\bf x}_2 \cdot {\bf u} &\leq k \\
+&\vdots \\
+{\bf x}_{n+1} \cdot {\bf u} &\leq k
+\end{array}
+\text{ and }
+\begin{array}{cc}
+{\bf y}_1 \cdot {\bf u} &\geq k \\
+{\bf y}_2 \cdot {\bf u} &\geq k \\
+&\vdots \\
+{\bf y}_{n+1} \cdot {\bf u} &\geq k
+\end{array}\end{equation}
+or vice versa, exchanging $X$ and $Y$.  If it's vice versa, then the vector $-{\bf u}$ would make these equations true.
+
+Rearranging this set of equations, we want to find a vector such that
+\begin{equation}
+\left[\begin{array}{ccccc}
+x_{11}&x_{12}&\cdots&x_{1d}&-1\\
+x_{21}&x_{22}&\cdots&x_{2d}&-1\\
+\vdots \\
+x_{d+1,1}&x_{d+1,2}&\cdots&x_{d+1,d}&-1\\
+-y_{11}&-y_{12}&\cdots&-y_{1d}&1 \\
+-y_{21}&-y_{22}&\cdots&-y_{2d}&1 \\
+\vdots \\
+-y_{d+1,1}&-y_{d+1,2}&\cdots&-y_{d+1,n}&1
+\end{array}\right]
+\left[\begin{array}{c} u_1\\u_2 \\\vdots \\u_n \\ k \end{array}\right]
+\leq
+{\bf 0}
+\end{equation}
+Where $(x_{i1},...,x_{id})={\bf x}_i$, $(y_{i1},...,y_{id}) = {\bf y}_i$, and $(u_{1},...,u_{d})={\bf u}$.  This can be written more simply in block matrix form:
+\begin{equation}
+\left[\begin{array}{c|c}
+X^T& -1 \\
+\hline
+-Y^T& 1 \\
+\end{array}\right]
+\left[\begin{array}{c} {\bf u}\\\hline k \end{array}\right]
+\leq {\bf 0}
+\label{eq:linear inequality}
+\end{equation}
+
+We want to find a nonzero solution to this equation.  Strictly speaking, we want ${\bf u}$ to be nonzero.  However, there is no circumstance where ${\bf u}={\bf 0}$ and $k\neq0$.  If ${\bf u}=0$, then the above simplifies to
+\begin{equation}
+\left[\begin{array}{c}-1\\1\end{array}\right]
+\left[\begin{array}{c}k\end{array}\right]
+\leq {\bf 0}
+\end{equation}
+whose only solution is $k=0$.
+ 
+%Matlab does not have a function that directly accomplishes this.  The closest function is linprog, which solves the equation
+%\begin{equation}
+%\min_{\bf x} {\bf f}\cdot{\bf x} \text{ such that } A{\bf x}\leq{\bf b}
+%\end{equation}
+%where ${\bf f}$ is a vector supplied by the user.  The trick is to choose the best ${\bf f}$ to make sure that the zero vector is the minimum solution if and only if there is no nonzero solution.
+
+A pair of simplices are disjoint if and only if Equation~\ref{eq:linear inequality} has a nonzero solution.  However, due to rounding errors, the computer has a hard time determining if there is a nonzero solution or not.  If the only solution is zero, the computer will only give a number very very close to zero.
+
+Due to the regularity of the locations of the vertices of each simplex, the line normal to a dividing plane is most likely an integer vector.  We can test each vector ${\bf u}$whose entries range from, say $-5$ to $5$, or some other small number.  If it divides the two simplices --- that is, if a value for $k$ can be found --- then the simplices are disjoint.  If none of those vectors works, then it is unknown whether they are disjoint.  This method will give a minimum value of tilings, but there are no rounding errors.
+
+\section{Finding Complete Subgraphs}
+
+We first create a very large graph whose vertices are all the unit $d$-simplices.  Two vertices share an edge if the corresponding simplices are disjoint.  This graph is encoded as a square, symmetric adjacency matrix $M$, with a column for every vertex.  $M_{i,j}=1$ if there is an edge between vertices $i$ and $j$.  The entries along the diagonal are all $0$ since there is not an edge between a vertex and itself.
+
+%\newglossaryentry{k-clique}{
+%  name={$k$-clique}, plural=simplices,
+%  description={ A complete subgraph with $k$ vertices.  A subgraph is complete if there exists an edge between every pair of vertices. }
+%}
+
+To find a set of $k$ simplices that are mutually disjoint, we must find a complete subgraph, or k-cliques, of the described graph.  
+
+
+The problem of finding all the $k$-cliques of a graph is NP-complete, which means that it can only be solved by exhaustive search.  A brute force algorithm would be to look at every single subgraph with $k$ vertices, and see if it is complete.  The algorithm we will use here is a bit more efficient.
+
+A $k$-clique is the union of a $(k-1)$-clique and a vertex which is has an edge adjacent to every vertex in the $(k-1)$-clique.  The $(k-1)$ clique is made up, in turn, of a $(k-2)$-clique and a vertex, and so on.  This means we can use an iterative process to discover all the $k$-cliques.  
+
+First, make a list of all edges, encoded as a matrix with two columns whose rows contain the ends of each edge.  For a particular edge, whose ends are $\{i, j\}$, look at the $i$th and $j$th column of the adjacency matrix.  For each row $k$, if $M_{k,i}=M_{k,j}=1$, then the subgraph of vertices $i$, $j$, and $k$ is complete, and so is a 3-clique.  Otherwise the subgraph is not complete.
+
+Make a list of all the 3-cliques, encoded as a three-column matrix whose rows contain the vertices of each 3-clique.  For a 3-clique whose vertices are $\{i, j, k\}$, for each row $m$, if $M_{m,i}=M_{m,j}=M_{m,k}=1$, then the subgraph of vertices $i$, $j$, $k$, and $m$ is a 4-clique.
+
+Continue this process until the desired size of cliques is reached.
+
+
+\section{Description of Orbit Algorithm}
+
+Once we have every possible set of $n!$ mutually disjoint simplices, we need to sort them into distinct orbits.
+
+The hyper-octahedral group $B_d$ is isomorphic to the symmetry group of the $d$-cube.  $B_d$ acts on the vertices of the cube by reflection and rotation.  $B_d$ is isomorphic to a semidirect product $\Z_{2}^d \rtimes S_d$.  For some $\sigma \in B_d$, you first choose which of the $2^d$ vertices the origin maps to ($\Z_{2}^d$), then permute the axes ($S_d$).  Take $B_3$ for example.  The $3$-cube's vertices are the binary numbers from $0$ to $7$.
+$$\begin{array}{ccc}
+0&0&0\\
+0&0&1\\
+0&1&0\\
+0&1&1\\
+1&0&0\\
+1&0&1\\
+1&1&0\\
+1&1&1\\
+\end{array}$$  
+The origin could map to any of the $8$ vertices, including itself.  Let $\sigma\in B_3$ such that $\sigma \cdot [0\ 0\ 0] = [0\ 1\ 1]$.
+$$\begin{array}{cccccccc}
+0&0&0 & \mapsto & 0&1&1  \\
+0&0&1\\
+0&1&0\\
+0&1&1\\
+1&0&0\\
+1&0&1\\
+1&1&0\\
+1&1&1\\
+\end{array}$$  
+Right now the axes are ordered right-middle-left.  They could be ordered in any way.  Suppose $\sigma$ permutes the axes to middle-left-right.  In order to "count" up we need the exclusive OR with $[0\ 1\ 0]$ and each of the original vertices with permuted axes.  Note that this preserves edges between vertices.  If there is an edge between $v$ and $w$, there is an edge between $\sigma (v)$ and $\sigma (w)$.
+
+So the entire map is 
+$$\begin{array}{cccccccc}
+0\ 0\ 0 & \mapsto & 0\ 0\ 0 \texttt{ XOR } 0\ 1\ 1 &=& 0\ 1\ 1  \\
+0\ 0\ 1 & \mapsto & 0\ 1\ 0 \texttt{ XOR } 0\ 1\ 1 &=& 0\ 0\ 1  \\
+0\ 1\ 0 & \mapsto & 1\ 0\ 0 \texttt{ XOR } 0\ 1\ 1 &=& 1\ 1\ 1  \\
+0\ 1\ 1 & \mapsto & 1\ 1\ 0 \texttt{ XOR } 0\ 1\ 1 &=& 1\ 0\ 1  \\
+1\ 0\ 0 & \mapsto & 0\ 0\ 1 \texttt{ XOR } 0\ 1\ 1 &=& 0\ 1\ 0  \\
+1\ 0\ 1 & \mapsto & 0\ 1\ 1 \texttt{ XOR } 0\ 1\ 1 &=& 0\ 0\ 0  \\
+1\ 1\ 0 & \mapsto & 1\ 0\ 1 \texttt{ XOR } 0\ 1\ 1 &=& 1\ 1\ 0  \\
+1\ 1\ 1 & \mapsto & 1\ 1\ 1 \texttt{ XOR } 0\ 1\ 1 &=& 1\ 0\ 0  \\
+\end{array}$$ 
+
+The resulting symmetry is the rotation about the axis shown in the figure below.
+
+\begin{figure}[H]
+	$$\begin{diagram}
+	\node{\pic{identity}{scale=.5}}
+		\arrow{e,t}{\sigma}
+	\node{\pic{sigma}{scale=.5}}
+	\end{diagram}$$
+\caption{ The group element $\sigma \in B_3$ acts on the cube by rotating about the diagonal between the points $[1\ 1\ 0]$ and $[0\ 0\ 1]$. }
+\end{figure}
+
+A computer understands permutations and reorderings, so we use the computer to make a list of every element in $B_3$ in terms of the vertices of the cube.  It is easiest to permute the axes first, and then pick a vertex to be the origin.  If the vertices are labeled $1$ through $2^n$, we can show each permutation in one-line notation.  So the identity permutation for $B_3$ is $(1\ 2\ 3\ 4\ 5\ 6\ 7\ 8)$.  The permutation $\sigma$ from above would be $(4\ 2\ 8\ 6\ 3\ 1\ 7\ 5)$.
+
+The Matlab function \texttt{perms(1:d)} gives a list of all possible permutations of the numbers $1$ through $d$.  Specifically, \texttt{perms(1:3)} gives the permutations in the following order.
+
+$$\begin{array}{ccc}
+     3  &   2  &   1 \\
+     3   &  1  &   2 \\
+     2   &  3 &    1 \\
+     2  &   1   &  3 \\ 
+     1  &   2   &  3 \\
+     1  &   3   &  2 \\
+\end{array}     $$
+
+So our list of the actions of $B_3$ on the vertices of the cube starts with the $2^n$ action where the axes are permuted $(3\ 2\ 1)$, then those where the axes are permuted $(3\ 1\ 2)$ and so on.  We can encode this as a $48 \times 8$ (so $2^d d! \times d$) matrix.
+
+
+$$
+\begin{diagram}
+\node{\begin{array}{c}
+(000\ 100\ 010\ 110\ 001\ 101\ 011\ 111)   \\
+(100\ 010\ 110\ 001\ 101\ 011\ 111\ 000) \\
+(010\ 110\ 001\ 101\ 011\ 111\ 000\ 100) \\
+\vdots  \\
+(000\ 100\ 001\ 101\ 010\ 110\ 011\ 111) \\
+(100\ 001\ 101\ 010\ 110\ 011\ 111\ 000) \\
+(001\ 101\ 010\ 110\ 011\ 111\ 000\ 100) \\
+\vdots
+\end{array}} \arrow{e}
+\node{\begin{array}{c}
+(1\ 5\ 3\ 7\ 2\ 6\ 4\ 8) \\
+(5\ 3\ 7\ 2\ 6\ 4\ 8\ 1) \\
+(3\ 7\ 2\ 6\ 4\ 8\ 1\ 5) \\
+\vdots \\
+(1\ 5\ 2\ 6\ 3\ 7\ 4\ 8) \\
+(5\ 2\ 6\ 3\ 7\ 4\ 8\ 1) \\
+(2\ 6\ 3\ 7\ 4\ 8\ 1\ 5) \\
+\vdots
+\end{array}}
+\end{diagram}
+$$
+
+
+We are more concerned with how $B_3$ acts on the simplices and tilings.  In the three dimensional case, there are $56$ unit tetrahedra, so we can order them $\Delta^3_1, \Delta^3_2, \Delta^3_3, ... , \Delta^3_{56}$ as described in Section~\ref{sec:Create a List of Simplices}.  Each tetrahedron is really just a set of vertices.  So, the action on the tetrahedron is the action on each vertex.  For example, the first tetrahedron is the {\bf A} tetrahedron around the point $[1\ 1\ 1]$,
+$\Delta^3_1=\{[0\ 1\ 1], [1\ 0\ 1], [1\ 1\ 0], [1\ 1\ 1] \}$.  So for the action $\sigma$ described above,
+
+\begin{equation}\begin{array}{rlrrrrr}
+\sigma \Delta^3_1&=&  \sigma\{&[0\ 1\ 1], &[1\ 0\ 1], &[1\ 1\ 0], &[1\ 1\ 1] \}\\
+&=&\{&\sigma[0\ 1\ 1], &\sigma[1\ 0\ 1], &\sigma[1\ 1\ 0], &\sigma[1\ 1\ 1] \} \\
+&=& \{&[1\ 0\ 1], &[0\ 0\ 0], &[1\ 1\ 0], &[1\ 0\ 0] \}\end{array}
+\end{equation}
+
+which is $\Delta^3_{32}$, the {\bf A} tetrahedron around the point $[1\ 0\ 0]$.  In fact, the orbit of an {\bf A} tetrahedron is all other {\bf A}s.  It is the same with {\bf B}s and {\bf C}s.  They are all structurally different from each other, and so there is no rotation that will take one to another.  This reaffirms our earlier distinction between them in Chapter~\ref{chap: Three Dimensions}. 
+
+We can make a list of how the elements of $B_3$ permute all the tetrahedra, encoded as a $48 \times 56$ matrix.  So the $i,j$th entry is where the tetrahedron $\Delta^3_j$ is mapped to under the $i$th symmetry.
+
+Since tilings are sets of simplices, we can use a similar procedure to determine the orbits of the tilings found by the $k$-cliques part of the program.
+
+If two simplices are disjoint, then the images of the two under an action of $B_n$ are also disjoint (and vice versa), since the symmetries preserve all the relationships between points in the cube.  We can use this to cut down on the number of operation in determining disjointness of all pairs of simplices, by just looking at representatives from all the orbits.  In three dimensions, there are $\frac{56\cdot55}{2}=1540$ pairs of tetrahedra, but only $47$ distinct orbits.  In four dimensions, there are $3\ 568\ 456$ pairs of simplices, but only $9805$ distinct orbits.
+
+
+\section{Computational Time and Difficulty}
+
+Many of these computations, especially finding the distinct orbits of sets of simplices, take a long time.  They also take up a lot of memory space.  In order to get it all to work, the program needs to be done in very small steps at a time.  First, all the lists should be made --- the list of simplices, the list of group elements of $B_d$ acting on the vertices of the cube, the list of the elements of $B_d$ acting on all the simplices of the cube, the orbits of simplices, the orbits of pairs of simplices.  The problem is that you need to be able to tell whether two simplices or sets of simplices are in each other's orbits or not.  This could be done quickly if we already have a list of all the orbits and the elements in that orbit.  
+
+
+\chapter{Potential Future Research}
+
+\begin{enumerate}
+\item Find the number of quasi-triangulations with unit simplices in an explicit formula terms of the dimension.
+\item\label{squares} Find how different block tilings could represent Worpitzky's Identity, $n^d = \sum_{m=0}^{d-1} A(d,m) \mchoose{n-m}{d}$?. Like how $T_{n}+T_{n-1}=n^2$ and $Te_n+4Te_{n-1}+Te_{n-2}=n^3$ can be represented by block representations of triangular and tetrahedral numbers?
+\item Look for ways to make the program more efficient, or develop new methods to solve the problem.
+\item Find all quasi-triangulations of the cube, and not just those with unit volume.  In graph whose vertices are all simplices, for each clique of any size, we would have to check to see if the volume of its simplices sum to the volume of the cube.
+\item Find all triangulations of the cube.  We could find all quasi-triangulations and sort through them to find the triangulations.  Or we could make a different sort of disjointness graph where there is an edge between two vertices if the interiors of the corresponding simplices are disjoint and their intersection is an entire face.
+\end{enumerate}
+
+
+%\chapter{Appendix I: Matlab Programs}
+
+% Some of the more simpler programs I can just provide a quick description of what they do.
+
+% Be sure to have lots of good comments.
+
+
+%\printglossaries
+
+\begin{acknowledgments}
+
+I would like to express my thanks to my advisor, Prof. Vin de Silva, who helped me with this project all the way through.  I would like to thank my second reader, Prof. Chris Towse for reviewing this paper and giving his comments, in addition to introducing me to Prof. de Silva in the first place.  Also thanks to Prof. Orrison and Prof. Kuenning for meeting with me occasionally throughout the year to discuss the parts of the project dealing in abstract algebra and computer science.
+
+\end{acknowledgments}
+
+
+
+\begin{thebibliography}{Ma75}
+
+\bibitem[Ch92]{Chazelle2} Chazelle, Bernard. ``An Optimal Algorithm for Intersecting Three-Dimensional
+Convex Polyhedra.''  \emph{Society for Industrial and Applied Mathematics}.
+21.4. (1992): 671-696. 
+
+\bibitem[Ch87]{Chazelle} Chazelle, B. and Dobkin, D. P. ``Intersection of Convex Objects in Two and Three Dimensions.''  \emph{Journal of the Association for Computing Machinery}. 34.1. (1987)" I-27. 
+
+
+\bibitem[Ha91]{Haimar} Haimar, Mark. ``A Simple and Relatively Efficient Triangulation of the $n$-Cube.'' \emph{Discrete \& Computational Geometry}.  6. (1991): 287-289.
+
+\bibitem[Le85]{Lee} Lee, Carl W. ``Triangulating the $d$-Cube.'' \emph{Annals of the New York Academy of Sciences} 440. (1985): 205-211.
+
+\bibitem[Pi09]{Pickover} Pickover, Clifford A. \emph{The Math Book}  (2009): 184.)
+
+%(amazon \url{http://www.amazon.com/The-Math-Book-Pythagoras-Mathematics/dp/1402757964}, google books \url{http://books.google.com/books?id=JrslMKTgSZwC&pg=PA184&source=gbs_toc_r&cad=4#v=onepage&q&f=false}
+
+\bibitem[Px10]{Pixley} Pixley, A.F. ``Topics in Discrete Mathematics.'' 21 Jul 2010.
+$<$\url{http://www.math.hmc.edu/~pixley/Topics_in_Discrete_Math.pdf} $>$
+
+
+\bibitem[Ma75]{Mara} Mara, Patrick Scott.  ``Triangulations for the Cube.''  \emph{Journal of Combinatorial Theory} 10. (1976): 170-177.
+
+
+
+
+
+\end{thebibliography}
+
+\end{document}
