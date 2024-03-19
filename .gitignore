@@ -1,0 +1,6 @@
+.DS_Store
+
+# latex
+.log
+.fls
+.aux
